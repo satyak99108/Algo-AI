@@ -64,35 +64,71 @@ export function EntityForm({ entityType, onSuccess }: EntityFormProps) {
     }
   };
 
+  // Helper to render an input field (called as a normal function to avoid losing focus)
+  const renderField = (name: string, label: string, type = "text", required = false) => (
+    <div className="space-y-2" key={name}>
+      <Label htmlFor={name}>
+        {label} {required && <span className="text-destructive">*</span>}
+      </Label>
+      <Input
+        id={name}
+        type={type}
+        required={required}
+        value={formData[name] || ""}
+        onChange={(e) => handleChange(name, e.target.value)}
+        className="bg-background"
+      />
+    </div>
+  );
+
+  const renderStatusField = () => (
+    <div className="space-y-2" key="status">
+      <Label>Status</Label>
+      <Select
+        value={formData.status || "active"}
+        onValueChange={(val) => handleChange("status", val || "active")}
+      >
+        <SelectTrigger>
+          <SelectValue placeholder="Select status" />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="active">Active</SelectItem>
+          <SelectItem value="inactive">Inactive</SelectItem>
+          <SelectItem value="archived">Archived</SelectItem>
+        </SelectContent>
+      </Select>
+    </div>
+  );
+
   // Render fields based on entity type
   const renderFields = () => {
     switch (entityType) {
       case "people":
         return (
           <>
-            <Field name="name" label="Full Name" required />
-            <Field name="role" label="Role / Title" />
-            <Field name="department" label="Department" />
-            <Field name="email" label="Email Address" type="email" />
-            <StatusField />
+            {renderField("name", "Full Name", "text", true)}
+            {renderField("role", "Role / Title")}
+            {renderField("department", "Department")}
+            {renderField("email", "Email Address", "email")}
+            {renderStatusField()}
           </>
         );
       case "projects":
         return (
           <>
-            <Field name="name" label="Project Name" required />
-            <Field name="description" label="Description" />
-            <Field name="start_date" label="Start Date" type="date" />
-            <Field name="end_date" label="End Date" type="date" />
-            <StatusField />
+            {renderField("name", "Project Name", "text", true)}
+            {renderField("description", "Description")}
+            {renderField("start_date", "Start Date", "date")}
+            {renderField("end_date", "End Date", "date")}
+            {renderStatusField()}
           </>
         );
       case "decisions":
         return (
           <>
-            <Field name="title" label="Decision Title" required />
-            <Field name="description" label="Description" />
-            <Field name="rationale" label="Rationale" />
+            {renderField("title", "Decision Title", "text", true)}
+            {renderField("description", "Description")}
+            {renderField("rationale", "Rationale")}
             <div className="space-y-2">
               <Label>Impact Level</Label>
               <Select
@@ -110,14 +146,14 @@ export function EntityForm({ entityType, onSuccess }: EntityFormProps) {
                 </SelectContent>
               </Select>
             </div>
-            <Field name="made_at" label="Date Made" type="date" />
+            {renderField("made_at", "Date Made", "date")}
           </>
         );
       case "tasks":
         return (
           <>
-            <Field name="title" label="Task Title" required />
-            <Field name="description" label="Description" />
+            {renderField("title", "Task Title", "text", true)}
+            {renderField("description", "Description")}
             <div className="space-y-2">
               <Label>Priority</Label>
               <Select
@@ -152,27 +188,25 @@ export function EntityForm({ entityType, onSuccess }: EntityFormProps) {
                 </SelectContent>
               </Select>
             </div>
-            <Field name="due_date" label="Due Date" type="date" />
+            {renderField("due_date", "Due Date", "date")}
           </>
         );
       case "events":
         return (
           <>
-            <Field name="title" label="Event Title" required />
-            <Field name="description" label="Description" />
-            <Field name="event_type" label="Event Type (e.g. launch, meeting)" />
-            <Field name="occurred_at" label="Date Occurred" type="date" />
+            {renderField("title", "Event Title", "text", true)}
+            {renderField("description", "Description")}
+            {renderField("event_type", "Event Type (e.g. launch, meeting)")}
+            {renderField("occurred_at", "Date Occurred", "date")}
           </>
         );
       case "processes":
       case "workflows":
         return (
           <>
-            <Field name="name" label="Name" required />
-            <Field name="description" label="Description" />
-            {entityType === "workflows" && (
-              <Field name="trigger" label="Workflow Trigger" />
-            )}
+            {renderField("name", "Name", "text", true)}
+            {renderField("description", "Description")}
+            {entityType === "workflows" && renderField("trigger", "Workflow Trigger")}
             <p className="text-xs text-muted-foreground mt-2">
               Note: Steps can be added later via the API.
             </p>
@@ -181,8 +215,8 @@ export function EntityForm({ entityType, onSuccess }: EntityFormProps) {
       case "documents":
         return (
           <>
-            <Field name="title" label="Document Title" required />
-            <Field name="content" label="Content / Summary" />
+            {renderField("title", "Document Title", "text", true)}
+            {renderField("content", "Content / Summary")}
             <div className="space-y-2">
               <Label>Document Type</Label>
               <Select
@@ -201,48 +235,13 @@ export function EntityForm({ entityType, onSuccess }: EntityFormProps) {
                 </SelectContent>
               </Select>
             </div>
-            <Field name="source" label="Source System" />
+            {renderField("source", "Source System")}
           </>
         );
       default:
-        return <Field name="name" label="Name" required />;
+        return renderField("name", "Name", "text", true);
     }
   };
-
-  const Field = ({ name, label, type = "text", required = false }: { name: string; label: string; type?: string; required?: boolean }) => (
-    <div className="space-y-2">
-      <Label htmlFor={name}>
-        {label} {required && <span className="text-destructive">*</span>}
-      </Label>
-      <Input
-        id={name}
-        type={type}
-        required={required}
-        value={formData[name] || ""}
-        onChange={(e) => handleChange(name, e.target.value)}
-        className="bg-background"
-      />
-    </div>
-  );
-
-  const StatusField = () => (
-    <div className="space-y-2">
-      <Label>Status</Label>
-      <Select
-        value={formData.status || "active"}
-        onValueChange={(val) => handleChange("status", val || "active")}
-      >
-        <SelectTrigger>
-          <SelectValue placeholder="Select status" />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="active">Active</SelectItem>
-          <SelectItem value="inactive">Inactive</SelectItem>
-          <SelectItem value="archived">Archived</SelectItem>
-        </SelectContent>
-      </Select>
-    </div>
-  );
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
