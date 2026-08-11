@@ -1,4 +1,5 @@
 import uuid
+import asyncio
 from typing import Any
 
 from sqlalchemy import select, func, text, desc, asc
@@ -83,16 +84,15 @@ class EntityRepository:
             query = query.order_by(desc(sort_col))
 
         # Get total count
-        total_result = await self.db.execute(count_query)
-        total = total_result.scalar_one()
+        total_res = await self.db.execute(count_query)
+        total = total_res.scalar_one()
 
         # Pagination
         offset = (page - 1) * page_size
         query = query.offset(offset).limit(page_size)
 
-        # Execute
-        result = await self.db.execute(query)
-        items = list(result.scalars().all())
+        items_res = await self.db.execute(query)
+        items = list(items_res.scalars().all())
 
         return items, total
 
@@ -147,6 +147,29 @@ class EntityRepository:
             select(name_col).where(model.id == entity_id)
         )
         return result.scalar_one_or_none()
+
+    async def get_entity_names_batch(
+        self, entity_refs: list[tuple[str, uuid.UUID]]
+    ) -> dict[tuple[str, uuid.UUID], str]:
+        """Fetch display names for a list of (entity_type, entity_id) pairs in batch."""
+        if not entity_refs:
+            return {}
+
+        type_to_ids: dict[str, set[uuid.UUID]] = {}
+        for etype, eid in entity_refs:
+            if etype in ENTITY_MODEL_MAP:
+                type_to_ids.setdefault(etype, set()).add(eid)
+
+        merged = {}
+        for etype, ids in type_to_ids.items():
+            model = self._get_model(etype)
+            name_field = ENTITY_NAME_FIELD[etype]
+            name_col = getattr(model, name_field)
+            stmt = select(model.id, name_col).where(model.id.in_(ids))
+            res = await self.db.execute(stmt)
+            for row in res.all():
+                merged[(etype, row[0])] = row[1]
+        return merged
 
     async def count_entities(self, entity_type: str) -> int:
         """Count total entities of a type."""

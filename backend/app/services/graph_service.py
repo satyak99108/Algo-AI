@@ -108,14 +108,17 @@ class GraphService:
             relationship_type=relationship_type,
         )
 
+        entity_refs = []
+        for rel in relationships:
+            entity_refs.append((rel.source_type, rel.source_id))
+            entity_refs.append((rel.target_type, rel.target_id))
+
+        names_map = await self.entity_repo.get_entity_names_batch(entity_refs)
+
         results = []
         for rel in relationships:
-            source_name = await self.entity_repo.get_entity_name(
-                rel.source_type, rel.source_id
-            )
-            target_name = await self.entity_repo.get_entity_name(
-                rel.target_type, rel.target_id
-            )
+            source_name = names_map.get((rel.source_type, rel.source_id))
+            target_name = names_map.get((rel.target_type, rel.target_id))
             results.append({
                 "id": str(rel.id),
                 "source_type": rel.source_type,
@@ -133,10 +136,8 @@ class GraphService:
 
     async def get_full_graph(self) -> GraphResponse:
         """Build the full knowledge graph for React Flow rendering."""
-        # Get all entities
+        # Fetch entities and relationships
         all_entities = await self.entity_repo.get_all_entities_for_graph()
-
-        # Get all relationships
         all_relationships = await self.relationship_repo.get_all_relationships()
 
         # Build nodes with circular layout
@@ -205,18 +206,21 @@ class GraphService:
         )
 
         # Collect all entity references
-        entity_refs: set[tuple[str, uuid.UUID]] = {(entity_type, entity_id)}
+        entity_refs: list[tuple[str, uuid.UUID]] = [(entity_type, entity_id)]
         for rel in relationships:
-            entity_refs.add((rel.source_type, rel.source_id))
-            entity_refs.add((rel.target_type, rel.target_id))
+            entity_refs.append((rel.source_type, rel.source_id))
+            entity_refs.append((rel.target_type, rel.target_id))
+
+        names_map = await self.entity_repo.get_entity_names_batch(entity_refs)
 
         # Build nodes
         nodes: list[GraphNode] = []
         node_index = 0
-        total = len(entity_refs)
+        unique_refs = list(set(entity_refs))
+        total = len(unique_refs)
 
-        for ref_type, ref_id in entity_refs:
-            name = await self.entity_repo.get_entity_name(ref_type, ref_id)
+        for ref_type, ref_id in unique_refs:
+            name = names_map.get((ref_type, ref_id))
             if name is None:
                 continue
 

@@ -1,5 +1,6 @@
 import uuid
 import math
+import asyncio
 from typing import Any
 
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -12,6 +13,18 @@ from app.exceptions import EntityNotFoundError, InvalidEntityTypeError
 
 
 VALID_ENTITY_TYPES = set(ENTITY_MODEL_MAP.keys())
+
+
+from sqlalchemy import select, func
+from app.models.person import Person
+from app.models.project import Project
+from app.models.decision import Decision
+from app.models.task import Task
+from app.models.process import Process
+from app.models.event import Event
+from app.models.document import Document
+from app.models.workflow import Workflow
+from app.models.relationship import Relationship
 
 
 class EntityService:
@@ -75,17 +88,24 @@ class EntityService:
         if entity is None:
             raise EntityNotFoundError(entity_type, str(entity_id))
 
-        response_schema = ENTITY_SCHEMAS[entity_type]["response"]
-        entity_data = response_schema.model_validate(entity).model_dump(mode="json")
-
-        # Get relationships
         relationships = await self.relationship_repo.get_entity_relationships(
             entity_type, entity_id
         )
 
+        response_schema = ENTITY_SCHEMAS[entity_type]["response"]
+        entity_data = response_schema.model_validate(entity).model_dump(mode="json")
+
+        entity_refs = []
+        for rel in relationships:
+            if rel.source_type == entity_type and rel.source_id == entity_id:
+                entity_refs.append((rel.target_type, rel.target_id))
+            else:
+                entity_refs.append((rel.source_type, rel.source_id))
+
+        names_map = await self.entity_repo.get_entity_names_batch(entity_refs)
+
         related_entities = []
         for rel in relationships:
-            # Determine direction and get the "other" entity's name
             if rel.source_type == entity_type and rel.source_id == entity_id:
                 direction = "outgoing"
                 other_type = rel.target_type
@@ -95,9 +115,7 @@ class EntityService:
                 other_type = rel.source_type
                 other_id = rel.source_id
 
-            other_name = await self.entity_repo.get_entity_name(other_type, other_id)
-            if other_name is None:
-                other_name = f"Unknown {other_type}"
+            other_name = names_map.get((other_type, other_id)) or f"Unknown {other_type}"
 
             related_entities.append(
                 RelatedEntity(
@@ -146,25 +164,32 @@ class EntityService:
         return True
 
     async def get_stats(self) -> StatsResponse:
-        """Get dashboard statistics."""
-        counts = {}
-        total = 0
-        for entity_type in VALID_ENTITY_TYPES:
-            count = await self.entity_repo.count_entities(entity_type)
-            counts[entity_type] = count
-            total += count
+        """Get dashboard statistics in a single optimized query."""
+        stmt = select(
+            select(func.count()).select_from(Person).scalar_subquery().label("people"),
+            select(func.count()).select_from(Project).scalar_subquery().label("projects"),
+            select(func.count()).select_from(Decision).scalar_subquery().label("decisions"),
+            select(func.count()).select_from(Task).scalar_subquery().label("tasks"),
+            select(func.count()).select_from(Process).scalar_subquery().label("processes"),
+            select(func.count()).select_from(Event).scalar_subquery().label("events"),
+            select(func.count()).select_from(Document).scalar_subquery().label("documents"),
+            select(func.count()).select_from(Workflow).scalar_subquery().label("workflows"),
+            select(func.count()).select_from(Relationship).scalar_subquery().label("relationships"),
+        )
+        result = await self.db.execute(stmt)
+        row = result.one()._asdict()
 
-        rel_count = await self.relationship_repo.count()
+        total = sum(v for k, v in row.items() if k != "relationships")
 
         return StatsResponse(
-            people=counts.get("people", 0),
-            projects=counts.get("projects", 0),
-            decisions=counts.get("decisions", 0),
-            tasks=counts.get("tasks", 0),
-            processes=counts.get("processes", 0),
-            events=counts.get("events", 0),
-            documents=counts.get("documents", 0),
-            workflows=counts.get("workflows", 0),
-            relationships=rel_count,
+            people=row.get("people", 0),
+            projects=row.get("projects", 0),
+            decisions=row.get("decisions", 0),
+            tasks=row.get("tasks", 0),
+            processes=row.get("processes", 0),
+            events=row.get("events", 0),
+            documents=row.get("documents", 0),
+            workflows=row.get("workflows", 0),
+            relationships=row.get("relationships", 0),
             total_entities=total,
         )
