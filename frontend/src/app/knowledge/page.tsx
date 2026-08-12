@@ -124,7 +124,18 @@ export default function KnowledgeGraphPage() {
   // Search & Filter state
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedType, setSelectedType] = useState<string>("all");
-  const [minConfidence, setMinConfidence] = useState<number>(0);
+  const [confidenceFilter, setConfidenceFilter] = useState<string>("all");
+
+  const minConfidence = useMemo(() => {
+    switch (confidenceFilter) {
+      case "high":
+        return 0.7;
+      case "very_high":
+        return 0.85;
+      default:
+        return 0;
+    }
+  }, [confidenceFilter]);
 
   // Side Sheet state for evidence inspection
   const [sheetOpen, setSheetOpen] = useState(false);
@@ -155,13 +166,36 @@ export default function KnowledgeGraphPage() {
   useEffect(() => {
     if (!graphData) return;
 
+    const query = searchTerm.toLowerCase().trim();
+
+    // Find direct search matches
+    const directMatchNodeIds = new Set<string>();
+    if (query) {
+      graphData.nodes.forEach((n) => {
+        if (n.data.label.toLowerCase().includes(query)) {
+          directMatchNodeIds.add(n.id);
+        }
+      });
+    }
+
+    // Find neighbor node IDs connected to direct matches
+    const connectedNodeIds = new Set<string>(directMatchNodeIds);
+    if (query && directMatchNodeIds.size > 0) {
+      graphData.edges.forEach((e) => {
+        if (directMatchNodeIds.has(e.source)) {
+          connectedNodeIds.add(e.target);
+        }
+        if (directMatchNodeIds.has(e.target)) {
+          connectedNodeIds.add(e.source);
+        }
+      });
+    }
+
     // Filter nodes
     const filteredNodes: Node[] = graphData.nodes
       .filter((n) => {
         const matchesType = selectedType === "all" || n.data.entityType === selectedType;
-        const matchesSearch =
-          !searchTerm.trim() ||
-          n.data.label.toLowerCase().includes(searchTerm.toLowerCase().trim());
+        const matchesSearch = !query || connectedNodeIds.has(n.id);
         const nodeConfidence = n.data.confidence || 0.9;
         const matchesConfidence = nodeConfidence >= minConfidence;
         return matchesType && matchesSearch && matchesConfidence;
@@ -318,16 +352,16 @@ export default function KnowledgeGraphPage() {
 
           {/* Min Confidence Threshold */}
           <Select
-            value={String(minConfidence)}
-            onValueChange={(val) => setMinConfidence(Number(val || "0"))}
+            value={confidenceFilter}
+            onValueChange={(val) => setConfidenceFilter(val || "all")}
           >
-            <SelectTrigger className="w-[160px] bg-background">
-              <SelectValue placeholder="Min Confidence" />
+            <SelectTrigger className="w-[180px] bg-background">
+              <SelectValue placeholder="All Confidence" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="0">All Confidence</SelectItem>
-              <SelectItem value="0.7">High (&ge; 70%)</SelectItem>
-              <SelectItem value="0.85">Very High (&ge; 85%)</SelectItem>
+              <SelectItem value="all">All Confidence</SelectItem>
+              <SelectItem value="high">High Confidence</SelectItem>
+              <SelectItem value="very_high">Very High Confidence</SelectItem>
             </SelectContent>
           </Select>
         </div>

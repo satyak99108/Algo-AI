@@ -198,3 +198,27 @@ export interface MemoryTimelineItem {
   source_type: string;
   timestamp: string;
 }
+
+export interface CopilotEvidence {
+  source_name: string;
+  source_type: string;
+  quote: string;
+  confidence: number;
+}
+
+export interface CopilotAnswerResponse {
+  answer: string;
+  confidence: number;
+  evidence: CopilotEvidence[];
+  mentioned_entities: Array<{
+    type: string;
+    id: string | null;
+    name: string;
+  }>;
+}
+
+export interface CopilotSuggestion {
+  category: string;
+  question: string;
+  description: string;
+}

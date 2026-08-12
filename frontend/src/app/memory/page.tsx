@@ -31,8 +31,21 @@ import type { EntityType, MemoryItem, MemoryTimelineItem, EvidenceRecord } from 
 export default function OperationalMemoryPage() {
   const [query, setQuery] = useState("");
   const [selectedEntityType, setSelectedEntityType] = useState<string>("all");
-  const [minConfidence, setMinConfidence] = useState<number>(0);
+  const [confidenceFilter, setConfidenceFilter] = useState<string>("all");
   const [activeTab, setActiveTab] = useState("memories");
+
+  const minConfidence = useMemo(() => {
+    switch (confidenceFilter) {
+      case "high":
+        return 0.7;
+      case "very_high":
+        return 0.85;
+      case "verified":
+        return 0.95;
+      default:
+        return 0;
+    }
+  }, [confidenceFilter]);
 
   const [memories, setMemories] = useState<MemoryItem[]>([]);
   const [timeline, setTimeline] = useState<MemoryTimelineItem[]>([]);
@@ -173,17 +186,17 @@ export default function OperationalMemoryPage() {
 
           {/* Confidence Filter */}
           <Select
-            value={String(minConfidence)}
-            onValueChange={(val) => setMinConfidence(Number(val || "0"))}
+            value={confidenceFilter}
+            onValueChange={(val) => setConfidenceFilter(val || "all")}
           >
-            <SelectTrigger className="w-[170px] bg-background">
-              <SelectValue placeholder="Min Confidence" />
+            <SelectTrigger className="w-[180px] bg-background">
+              <SelectValue placeholder="All Confidence" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="0">All Confidence</SelectItem>
-              <SelectItem value="0.7">High (&ge; 70%)</SelectItem>
-              <SelectItem value="0.85">Very High (&ge; 85%)</SelectItem>
-              <SelectItem value="0.95">Verified (&ge; 95%)</SelectItem>
+              <SelectItem value="all">All Confidence</SelectItem>
+              <SelectItem value="high">High Confidence</SelectItem>
+              <SelectItem value="very_high">Very High Confidence</SelectItem>
+              <SelectItem value="verified">Verified Confidence</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -308,21 +321,13 @@ export default function OperationalMemoryPage() {
                     <CardFooter className="px-5 py-3 bg-muted/20 border-t border-border/40 flex items-center justify-between text-xs text-muted-foreground">
                       <div className="flex items-center gap-2 truncate">
                         <FileText className="size-3.5 text-primary shrink-0" />
-                        <span className="truncate max-w-[200px]" title={item.source_name}>
+                        <span className="truncate" title={item.source_name}>
                           {item.source_name}
                         </span>
                         <Badge variant="outline" className="text-[10px] px-1.5 py-0 capitalize">
                           {item.source_type}
                         </Badge>
                       </div>
-
-                      <Link
-                        href={`/ingest`}
-                        className="flex items-center gap-1 text-primary hover:underline font-medium text-xs shrink-0"
-                      >
-                        Source Evidence
-                        <ArrowUpRight className="size-3" />
-                      </Link>
                     </CardFooter>
                   </Card>
                 );

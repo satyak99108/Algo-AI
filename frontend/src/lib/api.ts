@@ -196,4 +196,14 @@ export const api = {
     request<import("@/types/entities").MemoryTimelineItem[]>(
       `/memory/timeline?limit=${limit}`
     ),
+
+  // Copilot
+  askCopilot: (question: string) =>
+    request<import("@/types/entities").CopilotAnswerResponse>("/copilot/ask", {
+      method: "POST",
+      body: JSON.stringify({ question }),
+    }),
+
+  getCopilotSuggestions: () =>
+    request<import("@/types/entities").CopilotSuggestion[]>("/copilot/suggestions"),
 };

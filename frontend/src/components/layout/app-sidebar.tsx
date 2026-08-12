@@ -15,7 +15,7 @@ import {
   SidebarFooter,
   SidebarSeparator,
 } from "@/components/ui/sidebar";
-import { LayoutDashboard, Share2, Brain, Sparkles } from "lucide-react";
+import { LayoutDashboard, Share2, Brain, Sparkles, MessageSquare } from "lucide-react";
 import { ALL_ENTITY_TYPES, ENTITY_CONFIG } from "@/lib/constants";
 
 export function AppSidebar() {
@@ -54,6 +54,15 @@ export function AppSidebar() {
                 <SidebarMenuButton render={<Link href="/" />} isActive={pathname === "/"}>
                   <LayoutDashboard className="size-4" />
                   <span>Dashboard</span>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton
+                  render={<Link href="/copilot" />}
+                  isActive={pathname === "/copilot"}
+                >
+                  <MessageSquare className="size-4 text-cyan-400" />
+                  <span>Company Copilot</span>
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
@@ -115,7 +124,7 @@ export function AppSidebar() {
 
       <SidebarFooter className="p-4">
         <div className="text-xs text-muted-foreground text-center">
-          Phase 3 — Knowledge Graph & Memory
+          Phase 4 — Company Knowledge Copilot
         </div>
       </SidebarFooter>
     </Sidebar>
