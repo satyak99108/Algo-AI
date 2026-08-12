@@ -7,9 +7,9 @@ import Link from "next/link";
 import { Sparkles, ArrowRight } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "Operational Memory ™ — AI Knowledge Model",
+  title: "Algo AI ™ — AI Operational Memory Platform",
   description:
-    "AI-powered operational memory platform for modern engineering and company workflows.",
+    "Algo AI powered operational memory platform for modern engineering and company workflows.",
 };
 
 export default function RootLayout({
@@ -46,8 +46,8 @@ export default function RootLayout({
                   <div className="flex items-center gap-4">
                     <SidebarTrigger className="text-muted-foreground hover:text-foreground transition-colors" />
                     <Link href="/" className="flex items-center gap-2 group">
-                      <span className="font-display font-semibold tracking-tight text-xl text-foreground group-hover:opacity-90 transition-opacity">
-                        Operational Memory
+                      <span className="font-display font-bold tracking-tight text-xl text-foreground group-hover:opacity-90 transition-opacity">
+                        Algo AI
                       </span>
                       <span className="text-muted-foreground font-mono text-xs mt-0.5 font-medium">
                         TM
@@ -59,49 +59,45 @@ export default function RootLayout({
                   <div className="hidden md:flex items-center gap-8 font-sans text-sm">
                     <Link
                       href="/"
-                      className="text-foreground/70 hover:text-foreground transition-colors relative group py-1"
+                      className="text-foreground font-medium hover:text-foreground/80 transition-colors"
                     >
                       Dashboard
-                      <span className="absolute bottom-0 left-0 w-0 h-px bg-foreground transition-all duration-300 group-hover:w-full" />
                     </Link>
                     <Link
                       href="/copilot"
-                      className="text-foreground/70 hover:text-foreground transition-colors relative group py-1 flex items-center gap-1.5"
+                      className="text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1.5"
                     >
                       <Sparkles className="size-3.5 text-emerald-400" />
                       Copilot
-                      <span className="absolute bottom-0 left-0 w-0 h-px bg-foreground transition-all duration-300 group-hover:w-full" />
                     </Link>
                     <Link
                       href="/memory"
-                      className="text-foreground/70 hover:text-foreground transition-colors relative group py-1"
+                      className="text-muted-foreground hover:text-foreground transition-colors"
                     >
                       Workflows
-                      <span className="absolute bottom-0 left-0 w-0 h-px bg-foreground transition-all duration-300 group-hover:w-full" />
                     </Link>
                     <Link
                       href="/knowledge"
-                      className="text-foreground/70 hover:text-foreground transition-colors relative group py-1"
+                      className="text-muted-foreground hover:text-foreground transition-colors"
                     >
                       Knowledge Graph
-                      <span className="absolute bottom-0 left-0 w-0 h-px bg-foreground transition-all duration-300 group-hover:w-full" />
                     </Link>
                   </div>
 
-                  {/* Action Pill Buttons */}
+                  {/* Action Buttons */}
                   <div className="flex items-center gap-3">
                     <Link
                       href="/ingest"
-                      className="hidden sm:inline-flex items-center text-xs font-mono text-muted-foreground hover:text-foreground px-3 py-1.5 rounded-full border border-foreground/15 hover:border-foreground/40 transition-all"
+                      className="text-xs font-mono text-muted-foreground hover:text-foreground px-3 py-1.5 rounded-full border border-foreground/10 hover:border-foreground/30 transition-all hidden sm:inline-block"
                     >
                       Data Ingestion
                     </Link>
                     <Link
                       href="/copilot"
-                      className="inline-flex items-center justify-center gap-2 text-xs font-semibold bg-foreground hover:bg-foreground/90 text-background rounded-full px-5 py-2 transition-all duration-300 shadow-sm group"
+                      className="text-xs font-mono px-4 py-2 rounded-full bg-foreground text-background font-semibold hover:bg-foreground/90 transition-all flex items-center gap-1.5"
                     >
                       Start Copilot
-                      <ArrowRight className="size-3.5 transition-transform group-hover:translate-x-1" />
+                      <ArrowRight className="size-3.5" />
                     </Link>
                   </div>
                 </nav>
@@ -117,12 +113,12 @@ export default function RootLayout({
                 <div className="max-w-[1400px] mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
                   <div className="flex items-center gap-3">
                     <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                    <span>Operational Memory Platform v4.0</span>
+                    <span>Algo AI Platform v4.0</span>
                     <span className="text-foreground/30">|</span>
                     <span>Knowledge Model Active</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <span>&copy; 2026 Operational Memory TM. Built with Optimus Architecture.</span>
+                    <span>&copy; 2026 Algo AI TM. Built with Optimus Architecture.</span>
                     <span className="text-foreground/30">|</span>
                     <span className="text-foreground font-semibold">Made by Satyak Kumar</span>
                   </div>
