@@ -26,15 +26,15 @@ export function AppSidebar() {
       <SidebarHeader className="p-5">
         <Link href="/" className="flex items-center gap-2.5 group">
           <div className="flex items-center justify-center size-8 rounded-full bg-foreground text-background font-mono font-bold text-xs">
-            AA
+            OM
           </div>
           <div className="flex flex-col">
-            <span className="text-sm font-display font-bold tracking-tight text-foreground flex items-center gap-1">
-              Algo AI
+            <span className="text-sm font-display font-semibold tracking-tight text-foreground flex items-center gap-1">
+              Operational Memory
               <span className="font-mono text-[10px] text-muted-foreground">TM</span>
             </span>
             <span className="text-[11px] font-mono text-muted-foreground">
-              v4.0 Operational Engine
+              v4.0 Knowledge Engine
             </span>
           </div>
         </Link>

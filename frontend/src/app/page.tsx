@@ -103,7 +103,7 @@ export default function DashboardPage() {
           <h1 className="text-[clamp(2.5rem,7vw,6rem)] font-display leading-[0.95] tracking-tight font-normal">
             <span className="block text-foreground">Algo AI</span>
             <span className="block text-muted-foreground">
-              Operational Memory to{" "}
+              to{" "}
               <span className="relative inline-block text-foreground font-medium">
                 innovate.
                 <span className="absolute -bottom-2 left-0 right-0 h-2 bg-foreground/15 rounded-full" />
