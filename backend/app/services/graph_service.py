@@ -135,10 +135,26 @@ class GraphService:
         return results
 
     async def get_full_graph(self) -> GraphResponse:
-        """Build the full knowledge graph for React Flow rendering."""
+        """Build the full knowledge graph for React Flow rendering, enriched with confidence & evidence."""
         # Fetch entities and relationships
         all_entities = await self.entity_repo.get_all_entities_for_graph()
         all_relationships = await self.relationship_repo.get_all_relationships()
+
+        # Fetch extractions for confidence scores & evidence
+        from sqlalchemy import select
+        from app.models.extraction import Extraction
+        ex_stmt = select(Extraction)
+        ex_res = await self.db.execute(ex_stmt)
+        extractions = ex_res.scalars().all()
+
+        entity_extractions: dict[tuple[str, str], list[Extraction]] = {}
+        rel_extractions: dict[str, list[Extraction]] = {}
+
+        for ex in extractions:
+            key = (ex.entity_type, str(ex.entity_id))
+            entity_extractions.setdefault(key, []).append(ex)
+            if ex.relationship_id:
+                rel_extractions.setdefault(str(ex.relationship_id), []).append(ex)
 
         # Build nodes with circular layout
         nodes: list[GraphNode] = []
@@ -161,6 +177,11 @@ class GraphService:
 
                 entity_name = getattr(entity, name_field, "Unknown")
 
+                # Extraction metadata
+                ex_list = entity_extractions.get((entity_type, str(entity.id)), [])
+                confidence = max([e.confidence for e in ex_list], default=0.9) if ex_list else 0.9
+                evidence = ex_list[0].evidence_text if ex_list and ex_list[0].evidence_text else None
+
                 nodes.append(
                     GraphNode(
                         id=node_id,
@@ -169,6 +190,9 @@ class GraphService:
                             "label": entity_name,
                             "entityType": entity_type,
                             "entityId": str(entity.id),
+                            "confidence": round(confidence, 2),
+                            "evidence": evidence,
+                            "evidenceCount": len(ex_list),
                         },
                         position={"x": x, "y": y},
                     )
@@ -183,6 +207,10 @@ class GraphService:
 
             # Only include edge if both nodes exist
             if source_node_id in entity_id_map and target_node_id in entity_id_map:
+                r_ex_list = rel_extractions.get(str(rel.id), [])
+                r_confidence = max([e.confidence for e in r_ex_list], default=0.88) if r_ex_list else 0.88
+                r_evidence = r_ex_list[0].evidence_text if r_ex_list and r_ex_list[0].evidence_text else None
+
                 edges.append(
                     GraphEdge(
                         id=str(rel.id),
@@ -191,6 +219,8 @@ class GraphService:
                         label=rel.relationship_type,
                         data={
                             "relationshipType": rel.relationship_type,
+                            "confidence": round(r_confidence, 2),
+                            "evidence": r_evidence,
                         },
                     )
                 )

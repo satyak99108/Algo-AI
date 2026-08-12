@@ -122,6 +122,9 @@ export interface GraphNode {
     entityType: string;
     entityId: string;
     isFocal?: boolean;
+    confidence?: number;
+    evidence?: string | null;
+    evidenceCount?: number;
   };
   position: { x: number; y: number };
 }
@@ -131,7 +134,11 @@ export interface GraphEdge {
   source: string;
   target: string;
   label: string;
-  data?: Record<string, unknown>;
+  data?: {
+    relationshipType?: string;
+    confidence?: number;
+    evidence?: string | null;
+  };
 }
 
 export interface GraphResponse {
@@ -140,3 +147,54 @@ export interface GraphResponse {
 }
 
 export type EntityType = "people" | "projects" | "decisions" | "tasks" | "processes" | "events" | "documents" | "workflows";
+
+export interface EvidenceRecord {
+  id: string;
+  source_id: string;
+  source_name: string;
+  source_type: string;
+  confidence: number;
+  evidence_text: string;
+  created_at: string;
+}
+
+export interface MemoryItem {
+  id: string;
+  entity_type: string;
+  entity_id: string;
+  entity_name: string;
+  relationship: {
+    id: string;
+    source_type: string;
+    source_name: string;
+    relationship_type: string;
+    target_type: string;
+    target_name: string;
+  } | null;
+  confidence: number;
+  evidence_text: string | null;
+  source_id: string;
+  source_name: string;
+  source_type: string;
+  created_at: string;
+}
+
+export interface MemorySearchResponse {
+  items: MemoryItem[];
+  total: number;
+  page: number;
+  page_size: number;
+  total_pages: number;
+}
+
+export interface MemoryTimelineItem {
+  id: string;
+  entity_type: string;
+  entity_id: string;
+  entity_name: string;
+  confidence: number;
+  evidence_text: string | null;
+  source_name: string;
+  source_type: string;
+  timestamp: string;
+}

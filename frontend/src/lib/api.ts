@@ -161,4 +161,39 @@ export const api = {
 
   getAiStatus: () =>
     request<any>("/ingest/status"),
+
+  // Operational Memory
+  searchMemory: (params?: {
+    query?: string;
+    min_confidence?: number;
+    entity_type?: string;
+    page?: number;
+    page_size?: number;
+  }) => {
+    const searchParams = new URLSearchParams();
+    if (params?.query) searchParams.set("query", params.query);
+    if (params?.min_confidence !== undefined) searchParams.set("min_confidence", String(params.min_confidence));
+    if (params?.entity_type) searchParams.set("entity_type", params.entity_type);
+    if (params?.page) searchParams.set("page", String(params.page));
+    if (params?.page_size) searchParams.set("page_size", String(params.page_size));
+    const qs = searchParams.toString();
+    return request<import("@/types/entities").MemorySearchResponse>(
+      `/memory/search${qs ? `?${qs}` : ""}`
+    );
+  },
+
+  getEntityEvidence: (type: string, id: string) =>
+    request<import("@/types/entities").EvidenceRecord[]>(
+      `/memory/entity/${type}/${id}/evidence`
+    ),
+
+  getRelationshipEvidence: (id: string) =>
+    request<import("@/types/entities").EvidenceRecord[]>(
+      `/memory/relationship/${id}/evidence`
+    ),
+
+  getMemoryTimeline: (limit: number = 50) =>
+    request<import("@/types/entities").MemoryTimelineItem[]>(
+      `/memory/timeline?limit=${limit}`
+    ),
 };
