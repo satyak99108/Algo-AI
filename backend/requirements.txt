@@ -24,3 +24,4 @@ google-genai==1.18.0
 # Utilities
 python-dotenv==1.1.0
 python-multipart==0.0.20
+json-repair
