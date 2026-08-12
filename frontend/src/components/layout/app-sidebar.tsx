@@ -65,6 +65,15 @@ export function AppSidebar() {
                   <span>Knowledge Graph</span>
                 </SidebarMenuButton>
               </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton
+                  render={<Link href="/ingest" />}
+                  isActive={pathname === "/ingest"}
+                >
+                  <Brain className="size-4" />
+                  <span>Data Ingestion</span>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
@@ -97,7 +106,7 @@ export function AppSidebar() {
 
       <SidebarFooter className="p-4">
         <div className="text-xs text-muted-foreground text-center">
-          Phase 1 — Knowledge Model
+          Phase 2 — Data Ingestion
         </div>
       </SidebarFooter>
     </Sidebar>

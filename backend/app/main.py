@@ -5,7 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import get_settings
 from app.exceptions import exception_handlers
-from app.routers import entities, relationships, graph, stats
+from app.routers import entities, relationships, graph, stats, ingestion
 
 settings = get_settings()
 
@@ -52,6 +52,7 @@ app.include_router(entities.router, prefix="/api/v1")
 app.include_router(relationships.router, prefix="/api/v1")
 app.include_router(graph.router, prefix="/api/v1")
 app.include_router(stats.router, prefix="/api/v1")
+app.include_router(ingestion.router, prefix="/api/v1")
 
 
 @app.get("/")

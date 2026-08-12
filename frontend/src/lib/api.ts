@@ -18,12 +18,14 @@ async function request<T>(
 ): Promise<T> {
   const url = `${API_BASE}${endpoint}`;
 
+  const headers = new Headers(options.headers);
+  if (!(options.body instanceof FormData) && !headers.has("Content-Type")) {
+    headers.set("Content-Type", "application/json");
+  }
+
   const config: RequestInit = {
-    headers: {
-      "Content-Type": "application/json",
-      ...options.headers,
-    },
     ...options,
+    headers,
   };
 
   const response = await fetch(url, config);
@@ -134,4 +136,29 @@ export const api = {
   // Seed
   seed: () =>
     request<{ message: string }>("/seed", { method: "POST" }),
+
+  // Ingestion
+  uploadFile: (file: File) => {
+    const formData = new FormData();
+    formData.append("file", file);
+    return request<any>("/ingest/upload", {
+      method: "POST",
+      body: formData,
+    });
+  },
+
+  ingestText: (text: string, label?: string) =>
+    request<any>("/ingest/text", {
+      method: "POST",
+      body: JSON.stringify({ text, label }),
+    }),
+
+  listSources: (page: number = 1, page_size: number = 20) =>
+    request<any>(`/ingest/sources?page=${page}&page_size=${page_size}`),
+
+  getSourceDetail: (id: string) =>
+    request<any>(`/ingest/sources/${id}`),
+
+  getAiStatus: () =>
+    request<any>("/ingest/status"),
 };

@@ -5,7 +5,7 @@ import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { Share2, TrendingUp, ArrowRight } from "lucide-react";
+import { Share2, TrendingUp, ArrowRight, Loader2 } from "lucide-react";
 import { api } from "@/lib/api";
 import { ALL_ENTITY_TYPES, ENTITY_CONFIG } from "@/lib/constants";
 import type { StatsResponse } from "@/types/entities";
@@ -14,13 +14,40 @@ export default function DashboardPage() {
   const [stats, setStats] = useState<StatsResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [retrying, setRetrying] = useState(false);
 
   useEffect(() => {
-    api
-      .getStats()
-      .then(setStats)
-      .catch((err) => setError(err.message))
-      .finally(() => setLoading(false));
+    let cancelled = false;
+    let retryTimer: ReturnType<typeof setTimeout> | null = null;
+
+    const fetchStats = () => {
+      api
+        .getStats()
+        .then((data) => {
+          if (!cancelled) {
+            setStats(data);
+            setError(null);
+            setRetrying(false);
+            setLoading(false);
+          }
+        })
+        .catch((err) => {
+          if (!cancelled) {
+            setError(err.message);
+            setLoading(false);
+            setRetrying(true);
+            // Auto-retry every 3 seconds until backend is reachable
+            retryTimer = setTimeout(fetchStats, 3000);
+          }
+        });
+    };
+
+    fetchStats();
+
+    return () => {
+      cancelled = true;
+      if (retryTimer) clearTimeout(retryTimer);
+    };
   }, []);
 
   if (loading) {
@@ -59,7 +86,7 @@ export default function DashboardPage() {
         </div>
         <Card className="border-destructive/50">
           <CardContent className="pt-6">
-            <div className="text-center space-y-2">
+            <div className="text-center space-y-3">
               <p className="text-destructive font-medium">
                 Unable to connect to the backend
               </p>
@@ -69,6 +96,12 @@ export default function DashboardPage() {
                   localhost:8000
                 </code>
               </p>
+              {retrying && (
+                <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground pt-1">
+                  <Loader2 className="size-4 animate-spin" />
+                  <span>Retrying automatically…</span>
+                </div>
+              )}
             </div>
           </CardContent>
         </Card>

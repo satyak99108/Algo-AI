@@ -1,0 +1,24 @@
+Meeting Notes: Q3 Product Roadmap Sync
+Date: October 12, 2023
+
+Attendees:
+- Sarah Jenkins (Product Manager, Product Department, sarah.j@example.com)
+- David Chen (Lead Engineer, Engineering Department, david.c@example.com)
+- Elena Rodriguez (UX Designer, Design Department, elena.r@example.com)
+
+1. New Project Kickoff
+Sarah announced the launch of "Project Apollo", a major initiative to revamp our user onboarding experience. The goal is to reduce the time-to-value for new signups by 40%. David will be owning this project from the engineering side, while Elena participates in the design phase.
+
+2. Important Decisions
+We made the decision to "Deprecate Legacy API v1". The rationale is that it's costing too much in server maintenance and only 5% of users are still on it. This decision directly affects the ongoing "Backend Scaling Project", as we will now have more resources to dedicate to it. David made this decision after consulting with the backend team.
+
+3. Action Items and Tasks
+- Task: "Design New Onboarding Flow". This is a high-priority task. Elena is assigned to this task. It depends on the completion of the user research.
+- Task: "Set up Apollo staging environment". David is assigned to this medium-priority task. 
+- Sarah owns the task to "Draft customer communication for API deprecation".
+
+4. Workflows and Processes
+We also reviewed the "Weekly Deployment Workflow". This workflow is triggered by the "Code Freeze Event" every Thursday at 2 PM. The workflow follows the "QA Testing Process", which mandates that all critical paths are tested before merging. The deployment workflow creates the "Monitor Error Logs" task which is automatically assigned to the on-call engineer.
+
+5. Documentation
+For reference, Elena has updated the "Q3 Design Guidelines" document (a Figma file). This document details the new design tokens that will be used across Project Apollo.

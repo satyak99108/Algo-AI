@@ -17,6 +17,13 @@ class Settings(BaseSettings):
     # CORS
     frontend_url: str = "http://localhost:3000"
 
+    # AI / LLM
+    gemini_api_key: str = ""
+    gemini_model: str = "gemini-2.0-flash"
+
+    # File uploads
+    upload_dir: str = "uploads"
+
     # Server
     host: str = "0.0.0.0"
     port: int = 8000

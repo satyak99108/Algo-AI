@@ -20,6 +20,8 @@ from app.models.event import Event
 from app.models.document import Document
 from app.models.workflow import Workflow
 from app.models.relationship import Relationship
+from app.models.source import Source
+from app.models.extraction import Extraction
 
 # Alembic Config object
 config = context.config

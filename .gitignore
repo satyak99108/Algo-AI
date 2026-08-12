@@ -3,6 +3,9 @@
 .env.*
 !.env.example
 
+# Uploads
+backend/uploads/
+
 # Python
 __pycache__/
 *.py[cod]
