@@ -33,6 +33,7 @@ yarn-error.log*
 *.swo
 .DS_Store
 
-# Markdown files (Ignore all internal prompt/instruction files except README.md)
+# Markdown files (Ignore all internal prompt/instruction files except README.md and PROJECT_OVERVIEW.md)
 *.md
 !README.md
+!PROJECT_OVERVIEW.md
