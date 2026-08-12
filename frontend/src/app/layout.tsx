@@ -7,9 +7,9 @@ import Link from "next/link";
 import { Sparkles, ArrowRight } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "Operational Memory ™ — AI Knowledge Model",
+  title: "Algo AI ™ — AI Knowledge Model",
   description:
-    "AI-powered operational memory platform for modern engineering and company workflows.",
+    "AI-powered Algo AI platform for modern engineering and company workflows.",
 };
 
 export default function RootLayout({
@@ -47,7 +47,7 @@ export default function RootLayout({
                     <SidebarTrigger className="text-muted-foreground hover:text-foreground transition-colors" />
                     <Link href="/" className="flex items-center gap-2 group">
                       <span className="font-display font-semibold tracking-tight text-xl text-foreground group-hover:opacity-90 transition-opacity">
-                        Operational Memory
+                        Algo AI
                       </span>
                       <span className="text-muted-foreground font-mono text-xs mt-0.5 font-medium">
                         TM
@@ -117,12 +117,14 @@ export default function RootLayout({
                 <div className="max-w-[1400px] mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
                   <div className="flex items-center gap-3">
                     <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                    <span>Operational Memory Platform v4.0</span>
+                    <span>Algo AI Platform v4.0</span>
                     <span className="text-foreground/30">|</span>
                     <span>Knowledge Model Active</span>
                   </div>
-                  <div>
-                    &copy; 2026 Operational Memory TM. Built with Optimus Architecture.
+                  <div className="flex items-center gap-2">
+                    <span>&copy; 2026 Algo AI TM. Built with Optimus Architecture.</span>
+                    <span className="text-foreground/30">|</span>
+                    <span className="text-foreground font-semibold">Made by Satyak Kumar</span>
                   </div>
                 </div>
               </footer>

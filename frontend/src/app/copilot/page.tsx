@@ -182,7 +182,7 @@ export default function CompanyCopilotPage() {
                 <MessageScrollerContent className="gap-6 p-2">
                   <Marker variant="separator">
                     <MarkerContent className="font-mono text-xs text-muted-foreground bg-background px-4 py-1 rounded-full border border-foreground/10">
-                      Operational Memory AI Studio
+                      Algo AI Studio
                     </MarkerContent>
                   </Marker>
 

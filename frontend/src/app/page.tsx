@@ -266,7 +266,7 @@ export default function DashboardPage() {
             Architecture
           </div>
           <h2 className="text-3xl lg:text-4xl font-display tracking-tight">
-            How Operational Memory Works
+            How Algo AI Works
           </h2>
         </div>
 
