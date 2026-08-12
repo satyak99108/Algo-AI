@@ -5,28 +5,17 @@ import Link from "next/link";
 import {
   Brain,
   Search,
-  Sparkles,
-  ShieldCheck,
-  FileText,
   Clock,
-  Filter,
   RefreshCw,
-  ArrowUpRight,
-  Layers,
-  Quote,
-  CheckCircle2,
+  ArrowRight,
 } from "lucide-react";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Separator } from "@/components/ui/separator";
 import { api } from "@/lib/api";
 import { ENTITY_CONFIG, ALL_ENTITY_TYPES } from "@/lib/constants";
-import type { EntityType, MemoryItem, MemoryTimelineItem, EvidenceRecord } from "@/types/entities";
+import type { EntityType, MemoryItem, MemoryTimelineItem } from "@/types/entities";
 
 export default function OperationalMemoryPage() {
   const [query, setQuery] = useState("");
@@ -52,7 +41,6 @@ export default function OperationalMemoryPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Fetch memory search
   const fetchMemory = useCallback(async () => {
     setLoading(true);
     setError(null);
@@ -78,7 +66,6 @@ export default function OperationalMemoryPage() {
     fetchMemory();
   }, [fetchMemory]);
 
-  // Statistics summaries
   const avgConfidence = useMemo(() => {
     if (memories.length === 0) return 0;
     const sum = memories.reduce((acc, m) => acc + m.confidence, 0);
@@ -90,92 +77,81 @@ export default function OperationalMemoryPage() {
   }, [memories]);
 
   return (
-    <div className="flex flex-col gap-6 animate-fade-in pb-8">
-      {/* Header Banner */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-card border border-border p-6 rounded-2xl shadow-sm">
-        <div className="flex items-start gap-4">
-          <div className="flex items-center justify-center size-12 rounded-xl bg-primary/10 text-primary shrink-0">
-            <Sparkles className="size-6 text-emerald-400" />
+    <div className="flex flex-col gap-8 py-4 max-w-[1300px] mx-auto animate-fade-in">
+      {/* Optimus Header */}
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-4 border-b border-foreground/10">
+        <div>
+          <div className="inline-flex items-center gap-3 text-xs font-mono text-muted-foreground uppercase tracking-widest mb-2">
+            <span className="w-8 h-px bg-foreground/30" />
+            Operational Memory Layer
           </div>
-          <div className="flex flex-col gap-1">
-            <div className="flex items-center gap-2">
-              <h1 className="text-2xl font-bold tracking-tight">Operational Memory</h1>
-              <Badge variant="secondary" className="gap-1 bg-emerald-500/10 text-emerald-400 border-emerald-500/20">
-                <CheckCircle2 className="size-3" />
-                Phase 3 Layer
-              </Badge>
-            </div>
-            <p className="text-sm text-muted-foreground max-w-2xl">
-              Structured operational memory extracted from company communications, documents, and tasks — fully explainable with confidence scores and source evidence.
-            </p>
-          </div>
+          <h1 className="text-3xl lg:text-5xl font-display tracking-tight flex items-center gap-3">
+            Operational Workflows
+            <span className="text-xs font-mono px-3 py-1 rounded-full border border-emerald-500/30 bg-emerald-500/10 text-emerald-400">
+              ● Active Layer
+            </span>
+          </h1>
         </div>
 
         <Button
-          variant="outline"
-          size="sm"
           onClick={fetchMemory}
           disabled={loading}
-          className="gap-2 shrink-0 self-start md:self-auto"
+          className="rounded-full bg-foreground text-background hover:bg-foreground/90 font-mono text-xs px-5 h-10 gap-2 shrink-0 transition-all"
         >
-          <RefreshCw className={`size-4 ${loading ? "animate-spin" : ""}`} data-icon="inline-start" />
-          Refresh Memory
+          <RefreshCw className={`size-3.5 ${loading ? "animate-spin" : ""}`} />
+          Sync Memory State
         </Button>
       </div>
 
-      {/* Metrics Row */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <Card className="bg-card/50 backdrop-blur">
-          <CardHeader className="p-4 pb-2">
-            <CardDescription className="text-xs font-medium">Total Extracted Memories</CardDescription>
-            <CardTitle className="text-2xl font-bold text-primary">{memories.length}</CardTitle>
-          </CardHeader>
-          <CardContent className="p-4 pt-0">
-            <p className="text-xs text-muted-foreground">Facts & relationships with provenance</p>
-          </CardContent>
-        </Card>
+      {/* Optimus Metrics Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+        <div className="p-6 rounded-3xl border border-foreground/10 bg-card/60 space-y-2">
+          <div className="flex items-center justify-between font-mono text-xs text-muted-foreground">
+            <span>01</span>
+            <span className="uppercase">Extracted Facts</span>
+          </div>
+          <p className="text-4xl font-display font-bold text-foreground">{memories.length}</p>
+          <p className="text-xs text-muted-foreground">Mapped facts & relationships</p>
+        </div>
 
-        <Card className="bg-card/50 backdrop-blur">
-          <CardHeader className="p-4 pb-2">
-            <CardDescription className="text-xs font-medium">Average Confidence</CardDescription>
-            <CardTitle className="text-2xl font-bold text-emerald-400">{avgConfidence}%</CardTitle>
-          </CardHeader>
-          <CardContent className="p-4 pt-0">
-            <p className="text-xs text-muted-foreground">AI extraction certainty score</p>
-          </CardContent>
-        </Card>
+        <div className="p-6 rounded-3xl border border-foreground/10 bg-card/60 space-y-2">
+          <div className="flex items-center justify-between font-mono text-xs text-muted-foreground">
+            <span>02</span>
+            <span className="uppercase">Average Certainty</span>
+          </div>
+          <p className="text-4xl font-display font-bold text-emerald-400">{avgConfidence}%</p>
+          <p className="text-xs text-muted-foreground">Evidence confidence rating</p>
+        </div>
 
-        <Card className="bg-card/50 backdrop-blur">
-          <CardHeader className="p-4 pb-2">
-            <CardDescription className="text-xs font-medium">High Confidence Facts</CardDescription>
-            <CardTitle className="text-2xl font-bold text-cyan-400">{highConfidenceCount}</CardTitle>
-          </CardHeader>
-          <CardContent className="p-4 pt-0">
-            <p className="text-xs text-muted-foreground">&ge; 85% verified evidence confidence</p>
-          </CardContent>
-        </Card>
+        <div className="p-6 rounded-3xl border border-foreground/10 bg-card/60 space-y-2">
+          <div className="flex items-center justify-between font-mono text-xs text-muted-foreground">
+            <span>03</span>
+            <span className="uppercase">Verified Nodes</span>
+          </div>
+          <p className="text-4xl font-display font-bold text-cyan-400">{highConfidenceCount}</p>
+          <p className="text-xs text-muted-foreground">&ge; 85% confidence score</p>
+        </div>
       </div>
 
-      {/* Filter Bar */}
-      <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 bg-card border border-border p-3 rounded-xl">
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
+      {/* Optimus Floating Filter Bar */}
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-4 p-4 rounded-3xl border border-foreground/10 bg-card/60">
+        <div className="relative flex-1 w-full">
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
           <Input
-            placeholder="Search operational memory, entities, or evidence..."
+            placeholder="Search operational memory, entity names, or evidence facts..."
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            className="pl-9 bg-background"
+            className="pl-10 rounded-full border-foreground/15 bg-background/50 focus:border-foreground text-xs font-mono"
           />
         </div>
 
-        <div className="flex items-center gap-2">
-          {/* Entity Type Filter */}
+        <div className="flex flex-wrap items-center gap-3 w-full sm:w-auto">
           <Select value={selectedEntityType} onValueChange={(val) => setSelectedEntityType(val || "all")}>
-            <SelectTrigger className="w-[160px] bg-background">
-              <SelectValue placeholder="All Entities" />
+            <SelectTrigger className="w-[160px] rounded-full border-foreground/15 bg-background/50 text-xs font-mono">
+              <SelectValue placeholder="All Schema Types" />
             </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Entities</SelectItem>
+            <SelectContent className="rounded-2xl">
+              <SelectItem value="all">All Schema Types</SelectItem>
               {ALL_ENTITY_TYPES.map((type) => (
                 <SelectItem key={type} value={type}>
                   {ENTITY_CONFIG[type].label}
@@ -184,152 +160,123 @@ export default function OperationalMemoryPage() {
             </SelectContent>
           </Select>
 
-          {/* Confidence Filter */}
           <Select
             value={confidenceFilter}
             onValueChange={(val) => setConfidenceFilter(val || "all")}
           >
-            <SelectTrigger className="w-[180px] bg-background">
+            <SelectTrigger className="w-[170px] rounded-full border-foreground/15 bg-background/50 text-xs font-mono">
               <SelectValue placeholder="All Confidence" />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="rounded-2xl">
               <SelectItem value="all">All Confidence</SelectItem>
-              <SelectItem value="high">High Confidence</SelectItem>
-              <SelectItem value="very_high">Very High Confidence</SelectItem>
-              <SelectItem value="verified">Verified Confidence</SelectItem>
+              <SelectItem value="high">High (&gt;70%)</SelectItem>
+              <SelectItem value="very_high">Very High (&gt;85%)</SelectItem>
+              <SelectItem value="verified">Verified (&gt;95%)</SelectItem>
             </SelectContent>
           </Select>
         </div>
       </div>
 
       {/* Main Content Tabs */}
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="flex flex-col gap-4">
-        <TabsList className="w-full sm:w-auto self-start bg-card border border-border">
-          <TabsTrigger value="memories" className="gap-2">
-            <Brain className="size-4" />
-            Extracted Memories ({memories.length})
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+        <TabsList className="bg-foreground/5 p-1 rounded-full border border-foreground/10 inline-flex">
+          <TabsTrigger value="memories" className="rounded-full text-xs font-mono px-5 py-2 data-[state=active]:bg-foreground data-[state=active]:text-background">
+            <Brain className="size-3.5 mr-2" /> Extracted Memories ({memories.length})
           </TabsTrigger>
-          <TabsTrigger value="timeline" className="gap-2">
-            <Clock className="size-4" />
-            Learning Timeline
+          <TabsTrigger value="timeline" className="rounded-full text-xs font-mono px-5 py-2 data-[state=active]:bg-foreground data-[state=active]:text-background">
+            <Clock className="size-3.5 mr-2" /> Learning Timeline
           </TabsTrigger>
         </TabsList>
 
         {/* Tab 1: Extracted Memories Grid */}
-        <TabsContent value="memories" className="flex flex-col gap-4 mt-0">
+        <TabsContent value="memories" className="mt-0">
           {loading ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {[1, 2, 3, 4].map((i) => (
-                <Card key={i} className="p-6 flex flex-col gap-3">
-                  <Skeleton className="h-5 w-1/3" />
-                  <Skeleton className="h-4 w-3/4" />
-                  <Skeleton className="h-16 w-full" />
-                </Card>
+                <div key={i} className="h-44 rounded-3xl border border-foreground/10 bg-card/40 animate-pulse" />
               ))}
             </div>
           ) : error ? (
-            <Card className="p-8 text-center text-destructive">{error}</Card>
+            <div className="p-8 rounded-3xl border border-destructive/30 bg-destructive/5 text-center text-destructive font-mono text-xs">
+              {error}
+            </div>
           ) : memories.length === 0 ? (
-            <Card className="p-12 text-center flex flex-col items-center justify-center gap-3">
-              <Brain className="size-10 text-muted-foreground opacity-50" />
-              <div className="flex flex-col gap-1">
-                <p className="font-semibold text-lg">No operational memories found</p>
-                <p className="text-sm text-muted-foreground max-w-sm">
+            <div className="p-12 rounded-3xl border border-foreground/10 bg-card/40 text-center space-y-4">
+              <Brain className="size-10 text-muted-foreground mx-auto opacity-50" />
+              <div className="space-y-1">
+                <p className="font-display font-semibold text-lg">No operational memories found</p>
+                <p className="text-xs font-mono text-muted-foreground">
                   Ingest Slack messages or documents in the Data Ingestion tab to extract structured memory facts.
                 </p>
               </div>
-              <Button render={<Link href="/ingest" />} variant="outline" className="mt-2">
-                Go to Data Ingestion
-              </Button>
-            </Card>
+              <Link href="/ingest" className="inline-flex items-center text-xs font-mono px-5 py-2.5 rounded-full bg-foreground text-background font-medium hover:bg-foreground/90 transition-all">
+                Go to Data Ingestion <ArrowRight className="size-3.5 ml-2" />
+              </Link>
+            </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {memories.map((item) => {
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {memories.map((item, idx) => {
                 const typeConfig = ENTITY_CONFIG[item.entity_type as EntityType];
                 const Icon = typeConfig?.icon || Brain;
                 const confidencePct = Math.round(item.confidence * 100);
+                const numStr = String(idx + 1).padStart(2, "0");
 
                 return (
-                  <Card key={item.id} className="flex flex-col justify-between overflow-hidden border-border transition-all duration-200 hover:border-primary/40 shadow-sm">
-                    <CardHeader className="p-5 pb-3 flex flex-row items-start justify-between gap-3">
-                      <div className="flex items-start gap-3 min-w-0">
+                  <div key={item.id} className="p-6 rounded-3xl border border-foreground/10 bg-card/60 hover:bg-foreground/[0.03] transition-all duration-300 hover:-translate-y-1 space-y-4 flex flex-col justify-between group">
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between">
+                        <span className="font-mono text-xs text-muted-foreground">{numStr}</span>
+                        <span className="px-3 py-1 rounded-full text-xs font-mono border border-emerald-500/30 bg-emerald-500/10 text-emerald-400">
+                          {confidencePct}% Confidence
+                        </span>
+                      </div>
+
+                      <div className="flex items-center gap-3">
                         <div
-                          className="flex items-center justify-center size-9 rounded-lg shrink-0 mt-0.5"
+                          className="size-9 rounded-2xl flex items-center justify-center shrink-0"
                           style={{
                             background: typeConfig ? `${typeConfig.color}20` : "var(--primary-20)",
                           }}
                         >
-                          <Icon className="size-4" style={{ color: typeConfig?.color }} />
+                          <Icon className="size-4.5" style={{ color: typeConfig?.color }} />
                         </div>
-                        <div className="flex flex-col min-w-0">
-                          <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                        <div>
+                          <span className="text-[10px] font-mono text-muted-foreground uppercase tracking-wider block">
                             {typeConfig?.labelSingular || item.entity_type}
                           </span>
                           <Link
                             href={`/entities/${item.entity_type}/${item.entity_id}`}
-                            className="font-bold text-base hover:text-primary transition-colors truncate"
+                            className="font-display font-semibold text-lg text-foreground group-hover:translate-x-1 transition-transform inline-block"
                           >
                             {item.entity_name}
                           </Link>
                         </div>
                       </div>
 
-                      {/* Confidence Badge */}
-                      <Badge
-                        variant="outline"
-                        className={`shrink-0 gap-1 text-xs font-mono px-2.5 py-1 border ${
-                          confidencePct >= 85
-                            ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/30"
-                            : confidencePct >= 65
-                            ? "bg-amber-500/10 text-amber-400 border-amber-500/30"
-                            : "bg-red-500/10 text-red-400 border-red-500/30"
-                        }`}
-                      >
-                        <ShieldCheck className="size-3.5" />
-                        {confidencePct}% Confidence
-                      </Badge>
-                    </CardHeader>
-
-                    <CardContent className="px-5 py-3 flex flex-col gap-3">
-                      {/* Relationship / Fact Summary */}
-                      {item.relationship ? (
-                        <div className="flex items-center gap-2 p-2.5 rounded-lg bg-muted/40 text-xs font-medium border border-border/50">
+                      {item.relationship && (
+                        <div className="p-3 rounded-xl bg-background/50 border border-foreground/10 text-xs font-mono flex items-center gap-2">
                           <span className="font-semibold text-foreground">{item.relationship.source_name}</span>
-                          <Badge variant="secondary" className="text-[10px] uppercase font-mono px-1.5 py-0.5">
+                          <span className="text-[10px] text-muted-foreground uppercase px-2 py-0.5 rounded-full border border-foreground/15">
                             {item.relationship.relationship_type.replace(/_/g, " ")}
-                          </Badge>
+                          </span>
                           <span className="font-semibold text-foreground">{item.relationship.target_name}</span>
                         </div>
-                      ) : (
-                        <div className="text-xs text-muted-foreground font-medium flex items-center gap-1.5">
-                          <Layers className="size-3.5 text-primary" />
-                          <span>Structured entity record mapped in operational memory</span>
-                        </div>
                       )}
 
-                      {/* Evidence Quote */}
                       {item.evidence_text && (
-                        <div className="flex gap-2.5 p-3 rounded-xl bg-background/80 border border-border/60 text-xs text-muted-foreground italic">
-                          <Quote className="size-4 text-emerald-400 shrink-0 mt-0.5 opacity-70" />
-                          <p className="line-clamp-3 leading-relaxed text-foreground/90">
-                            &ldquo;{item.evidence_text}&rdquo;
-                          </p>
+                        <div className="p-4 rounded-2xl bg-background/70 border border-foreground/10 text-xs italic text-foreground/90 font-sans leading-relaxed">
+                          &ldquo;{item.evidence_text}&rdquo;
                         </div>
                       )}
-                    </CardContent>
+                    </div>
 
-                    <CardFooter className="px-5 py-3 bg-muted/20 border-t border-border/40 flex items-center justify-between text-xs text-muted-foreground">
-                      <div className="flex items-center gap-2 truncate">
-                        <FileText className="size-3.5 text-primary shrink-0" />
-                        <span className="truncate" title={item.source_name}>
-                          {item.source_name}
-                        </span>
-                        <Badge variant="outline" className="text-[10px] px-1.5 py-0 capitalize">
-                          {item.source_type}
-                        </Badge>
-                      </div>
-                    </CardFooter>
-                  </Card>
+                    <div className="pt-3 border-t border-foreground/5 flex items-center justify-between text-xs font-mono text-muted-foreground">
+                      <span className="truncate max-w-[200px]" title={item.source_name}>
+                        Source: {item.source_name}
+                      </span>
+                      <span className="capitalize">{item.source_type}</span>
+                    </div>
+                  </div>
                 );
               })}
             </div>
@@ -338,61 +285,39 @@ export default function OperationalMemoryPage() {
 
         {/* Tab 2: Learning Timeline */}
         <TabsContent value="timeline" className="mt-0">
-          <Card className="p-6">
-            <CardHeader className="px-0 pt-0 pb-4">
-              <CardTitle className="text-lg font-bold flex items-center gap-2">
-                <Clock className="size-5 text-primary" />
-                Operational Memory Extraction History
-              </CardTitle>
-              <CardDescription>
-                Chronological audit stream of facts, responsibilities, and relationships learned by the system.
-              </CardDescription>
-            </CardHeader>
+          <div className="p-8 rounded-3xl border border-foreground/10 bg-card/60 space-y-6">
+            <div>
+              <h3 className="font-display font-semibold text-xl">Operational Memory Stream</h3>
+              <p className="text-xs font-mono text-muted-foreground mt-1">Chronological extraction logs</p>
+            </div>
 
-            <CardContent className="px-0 pb-0">
-              {timeline.length === 0 ? (
-                <p className="text-sm text-muted-foreground text-center py-8">
-                  No memory extraction events recorded yet.
-                </p>
-              ) : (
-                <div className="relative pl-6 border-l-2 border-border flex flex-col gap-6">
-                  {timeline.map((item, idx) => (
-                    <div key={item.id || idx} className="relative flex flex-col gap-1.5">
-                      {/* Dot marker */}
-                      <div className="absolute -left-[31px] top-1 size-3.5 rounded-full bg-primary ring-4 ring-background" />
-
-                      <div className="flex flex-wrap items-center gap-2 text-xs">
-                        <span className="font-mono text-muted-foreground">
-                          {new Date(item.timestamp).toLocaleString()}
-                        </span>
-                        <Badge variant="outline" className="text-[10px] uppercase font-semibold">
-                          {item.entity_type}
-                        </Badge>
-                        <Badge variant="secondary" className="text-[10px] bg-emerald-500/10 text-emerald-400 border-0">
-                          {Math.round(item.confidence * 100)}% Confidence
-                        </Badge>
-                      </div>
-
-                      <div className="font-semibold text-sm">
-                        Learned fact about <span className="text-primary">{item.entity_name}</span>
-                      </div>
-
-                      {item.evidence_text && (
-                        <p className="text-xs text-muted-foreground bg-muted/30 p-2.5 rounded-lg border border-border/40 font-mono">
-                          &ldquo;{item.evidence_text}&rdquo;
-                        </p>
-                      )}
-
-                      <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
-                        <FileText className="size-3" />
-                        <span>Source document: {item.source_name} ({item.source_type})</span>
-                      </div>
+            {timeline.length === 0 ? (
+              <p className="text-xs font-mono text-muted-foreground text-center py-10">
+                No timeline records logged yet.
+              </p>
+            ) : (
+              <div className="relative pl-6 border-l border-foreground/20 space-y-6">
+                {timeline.map((item, idx) => (
+                  <div key={item.id || idx} className="relative space-y-2">
+                    <div className="absolute -left-[31px] top-1 size-2.5 rounded-full bg-foreground" />
+                    <div className="flex items-center gap-3 text-xs font-mono text-muted-foreground">
+                      <span>{new Date(item.timestamp).toLocaleString()}</span>
+                      <span className="px-2 py-0.5 rounded-full border border-foreground/15 text-foreground uppercase">{item.entity_type}</span>
+                      <span className="text-emerald-400">{Math.round(item.confidence * 100)}% Match</span>
                     </div>
-                  ))}
-                </div>
-              )}
-            </CardContent>
-          </Card>
+                    <p className="font-display font-semibold text-base text-foreground">
+                      Learned entity: <span className="text-cyan-400">{item.entity_name}</span>
+                    </p>
+                    {item.evidence_text && (
+                      <p className="p-3 rounded-xl bg-background/50 border border-foreground/10 text-xs italic font-sans text-muted-foreground">
+                        &ldquo;{item.evidence_text}&rdquo;
+                      </p>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
         </TabsContent>
       </Tabs>
     </div>

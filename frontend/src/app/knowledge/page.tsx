@@ -17,8 +17,6 @@ import {
   ConnectionMode,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -32,13 +30,10 @@ import {
 import {
   RefreshCw,
   Search,
-  ShieldCheck,
   FileText,
   ExternalLink,
   Quote,
   Sparkles,
-  Layers,
-  ArrowRight,
 } from "lucide-react";
 import { api } from "@/lib/api";
 import { ENTITY_CONFIG, ALL_ENTITY_TYPES } from "@/lib/constants";
@@ -60,29 +55,29 @@ function EntityNode({ data }: NodeProps) {
     <div className="group cursor-pointer min-w-[150px]">
       <Handle type="target" position={Position.Top} className="!bg-border" />
       <div
-        className="flex flex-col gap-1.5 px-3 py-2.5 rounded-xl border transition-all duration-200 hover:scale-105 shadow-md"
+        className="flex flex-col gap-1.5 px-3.5 py-2.5 rounded-2xl border transition-all duration-300 hover:scale-105 shadow-xl"
         style={{
           background: config.bgColor,
           borderColor: config.borderColor,
-          boxShadow: `0 0 14px ${config.bgColor}`,
+          boxShadow: `0 0 16px ${config.bgColor}`,
         }}
       >
         <div className="flex items-center justify-between gap-2">
           <div className="flex items-center gap-2">
             <div
-              className="flex items-center justify-center size-7 rounded-md"
+              className="flex items-center justify-center size-7 rounded-xl"
               style={{ background: `${config.color}22` }}
             >
               <Icon className="size-3.5" style={{ color: config.color }} />
             </div>
             <div className="flex flex-col min-w-0">
               <span
-                className="text-xs font-bold truncate max-w-[110px]"
+                className="text-xs font-display font-semibold truncate max-w-[110px]"
                 style={{ color: config.color }}
               >
                 {data.label as string}
               </span>
-              <span className="text-[10px] text-muted-foreground">
+              <span className="text-[10px] font-mono text-muted-foreground">
                 {config.labelSingular}
               </span>
             </div>
@@ -121,7 +116,6 @@ export default function KnowledgeGraphPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Search & Filter state
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedType, setSelectedType] = useState<string>("all");
   const [confidenceFilter, setConfidenceFilter] = useState<string>("all");
@@ -137,7 +131,6 @@ export default function KnowledgeGraphPage() {
     }
   }, [confidenceFilter]);
 
-  // Side Sheet state for evidence inspection
   const [sheetOpen, setSheetOpen] = useState(false);
   const [selectedNodeData, setSelectedNodeData] = useState<any | null>(null);
   const [selectedEdgeData, setSelectedEdgeData] = useState<any | null>(null);
@@ -162,13 +155,11 @@ export default function KnowledgeGraphPage() {
     fetchGraph();
   }, [fetchGraph]);
 
-  // Apply filters to nodes and edges
   useEffect(() => {
     if (!graphData) return;
 
     const query = searchTerm.toLowerCase().trim();
 
-    // Find direct search matches
     const directMatchNodeIds = new Set<string>();
     if (query) {
       graphData.nodes.forEach((n) => {
@@ -178,7 +169,6 @@ export default function KnowledgeGraphPage() {
       });
     }
 
-    // Find neighbor node IDs connected to direct matches
     const connectedNodeIds = new Set<string>(directMatchNodeIds);
     if (query && directMatchNodeIds.size > 0) {
       graphData.edges.forEach((e) => {
@@ -191,7 +181,6 @@ export default function KnowledgeGraphPage() {
       });
     }
 
-    // Filter nodes
     const filteredNodes: Node[] = graphData.nodes
       .filter((n) => {
         const matchesType = selectedType === "all" || n.data.entityType === selectedType;
@@ -209,7 +198,6 @@ export default function KnowledgeGraphPage() {
 
     const validNodeIds = new Set(filteredNodes.map((n) => n.id));
 
-    // Filter edges
     const filteredEdges: Edge[] = graphData.edges
       .filter(
         (e) =>
@@ -221,9 +209,9 @@ export default function KnowledgeGraphPage() {
         const edgeConfidence = (e.data?.confidence as number) || 0.88;
         const strokeColor =
           edgeConfidence >= 0.85
-            ? "oklch(0.6 0.15 160)" // Emerald tint
+            ? "oklch(0.7 0.16 160)"
             : edgeConfidence >= 0.65
-            ? "oklch(0.65 0.15 70)" // Amber tint
+            ? "oklch(0.75 0.16 70)"
             : "oklch(0.5 0 0)";
 
         return {
@@ -236,12 +224,13 @@ export default function KnowledgeGraphPage() {
           style: { stroke: strokeColor, strokeWidth: 1.8 },
           labelStyle: {
             fontSize: 9,
-            fill: "oklch(0.8 0 0)",
+            fill: "oklch(0.9 0 0)",
             fontWeight: 600,
+            fontFamily: "monospace",
           },
           labelBgStyle: {
-            fill: "oklch(0.18 0 0)",
-            fillOpacity: 0.92,
+            fill: "oklch(0.12 0 0)",
+            fillOpacity: 0.95,
           },
           labelBgPadding: [6, 3] as [number, number],
           markerEnd: {
@@ -258,7 +247,6 @@ export default function KnowledgeGraphPage() {
     setEdges(filteredEdges);
   }, [graphData, selectedType, searchTerm, minConfidence, setNodes, setEdges]);
 
-  // Click node to open evidence sheet
   const handleNodeClick = useCallback(
     (_: React.MouseEvent, node: Node) => {
       const data = node.data as any;
@@ -276,7 +264,6 @@ export default function KnowledgeGraphPage() {
     []
   );
 
-  // Click edge to open evidence sheet
   const handleEdgeClick = useCallback(
     (_: React.MouseEvent, edge: Edge) => {
       setSelectedEdgeData(edge);
@@ -300,48 +287,49 @@ export default function KnowledgeGraphPage() {
   }, [graphData]);
 
   return (
-    <div className="flex flex-col gap-4 animate-fade-in pb-8">
+    <div className="flex flex-col gap-6 animate-fade-in py-4 max-w-[1400px] mx-auto">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-        <div className="flex flex-col gap-1">
-          <h1 className="text-2xl font-bold tracking-tight">Knowledge Graph</h1>
-          <p className="text-sm text-muted-foreground">
-            Interactive visualization of operational memory, confidence scores, and evidence chains
-          </p>
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-4 border-b border-foreground/10">
+        <div>
+          <div className="inline-flex items-center gap-3 text-xs font-mono text-muted-foreground uppercase tracking-widest mb-2">
+            <span className="w-8 h-px bg-foreground/30" />
+            Knowledge Architecture
+          </div>
+          <h1 className="text-3xl lg:text-5xl font-display tracking-tight">
+            Knowledge Graph Explorer
+          </h1>
         </div>
 
         <Button
-          variant="outline"
-          size="sm"
           onClick={fetchGraph}
           disabled={loading}
-          className="gap-2 shrink-0"
+          className="rounded-full bg-foreground text-background hover:bg-foreground/90 font-mono text-xs px-5 h-10 gap-2 shrink-0 transition-all"
         >
-          <RefreshCw className={`size-4 ${loading ? "animate-spin" : ""}`} data-icon="inline-start" />
-          Refresh Graph
+          <RefreshCw className={`size-3.5 ${loading ? "animate-spin" : ""}`} />
+          Refresh Graph State
         </Button>
       </div>
 
-      {/* Control Bar: Search, Entity Filter, Confidence Threshold */}
-      <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 bg-card border border-border p-3 rounded-xl">
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
+      {/* Optimus Floating Control Bar */}
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-4 p-4 rounded-3xl border border-foreground/10 bg-card/60">
+        <div className="relative flex-1 w-full">
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
           <Input
-            placeholder="Search nodes by name..."
+            placeholder="Search nodes by entity name..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-9 bg-background"
+            className="pl-10 rounded-full border-foreground/15 bg-background/50 focus:border-foreground text-xs font-mono"
           />
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-3 w-full sm:w-auto">
           {/* Entity Type Filter */}
           <Select value={selectedType} onValueChange={(val) => setSelectedType(val || "all")}>
-            <SelectTrigger className="w-[150px] bg-background">
+            <SelectTrigger className="w-[160px] rounded-full border-foreground/15 bg-background/50 text-xs font-mono">
               <SelectValue placeholder="All Types" />
             </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Entity Types</SelectItem>
+            <SelectContent className="rounded-2xl">
+              <SelectItem value="all">All Schema Types</SelectItem>
               {ALL_ENTITY_TYPES.map((t) => (
                 <SelectItem key={t} value={t}>
                   {ENTITY_CONFIG[t].label}
@@ -355,191 +343,184 @@ export default function KnowledgeGraphPage() {
             value={confidenceFilter}
             onValueChange={(val) => setConfidenceFilter(val || "all")}
           >
-            <SelectTrigger className="w-[180px] bg-background">
+            <SelectTrigger className="w-[170px] rounded-full border-foreground/15 bg-background/50 text-xs font-mono">
               <SelectValue placeholder="All Confidence" />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="rounded-2xl">
               <SelectItem value="all">All Confidence</SelectItem>
-              <SelectItem value="high">High Confidence</SelectItem>
-              <SelectItem value="very_high">Very High Confidence</SelectItem>
+              <SelectItem value="high">High Confidence (&gt;70%)</SelectItem>
+              <SelectItem value="very_high">Very High (&gt;85%)</SelectItem>
             </SelectContent>
           </Select>
         </div>
       </div>
 
-      {/* Legend & Count */}
-      <div className="flex flex-wrap items-center justify-between gap-2 px-1">
+      {/* Legend Bar & Counts */}
+      <div className="flex flex-wrap items-center justify-between gap-3 px-2">
         <div className="flex flex-wrap items-center gap-2">
           {activeLegendTypes.map((type) => {
             const cfg = ENTITY_CONFIG[type];
             const Ic = cfg.icon;
             return (
-              <Badge
+              <span
                 key={type}
-                variant="outline"
-                className="gap-1.5 px-2.5 py-1"
-                style={{ borderColor: `${cfg.color}44` }}
+                className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border text-xs font-mono"
+                style={{ borderColor: `${cfg.color}44`, background: `${cfg.color}11` }}
               >
                 <Ic className="size-3" style={{ color: cfg.color }} />
-                <span className="text-xs font-medium">{cfg.label}</span>
-              </Badge>
+                <span className="text-foreground">{cfg.label}</span>
+              </span>
             );
           })}
         </div>
 
         {graphData && (
-          <div className="text-xs text-muted-foreground font-medium flex items-center gap-2">
-            <span>Showing {nodes.length} nodes</span>
-            <span>&middot;</span>
-            <span>{edges.length} relationships</span>
+          <div className="text-xs font-mono text-muted-foreground flex items-center gap-3">
+            <span className="flex items-center gap-1.5">
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+              {nodes.length} Nodes Rendered
+            </span>
+            <span className="text-foreground/20">|</span>
+            <span>{edges.length} Edges</span>
           </div>
         )}
       </div>
 
-      {/* ReactFlow Graph Canvas */}
-      <Card className="overflow-hidden border-border shadow-sm">
-        <CardContent className="p-0">
-          <div className="h-[calc(100vh-310px)] min-h-[520px] relative">
-            {error ? (
-              <div className="flex items-center justify-center h-full">
-                <div className="text-center flex flex-col gap-2">
-                  <p className="text-destructive font-semibold">{error}</p>
-                  <p className="text-sm text-muted-foreground">
-                    Ensure the FastAPI backend is running
-                  </p>
-                </div>
+      {/* ReactFlow Graph Canvas Container */}
+      <div className="rounded-3xl border border-foreground/10 overflow-hidden bg-card/40">
+        <div className="h-[calc(100vh-320px)] min-h-[550px] relative">
+          {error ? (
+            <div className="flex items-center justify-center h-full">
+              <div className="text-center space-y-2">
+                <p className="text-destructive font-mono text-sm">{error}</p>
+                <p className="text-xs text-muted-foreground">Check backend server connection at localhost:8000</p>
               </div>
-            ) : (
-              <ReactFlow
-                nodes={nodes}
-                edges={edges}
-                onNodesChange={onNodesChange}
-                onEdgesChange={onEdgesChange}
-                onNodeClick={handleNodeClick}
-                onEdgeClick={handleEdgeClick}
-                nodeTypes={nodeTypes}
-                connectionMode={ConnectionMode.Loose}
-                fitView
-                fitViewOptions={{ padding: 0.2 }}
-                minZoom={0.3}
-                maxZoom={2}
-                proOptions={{ hideAttribution: true }}
-                style={{ background: "oklch(0.12 0 0)" }}
-              >
-                <Background color="oklch(0.22 0 0)" gap={24} size={1} />
-                <Controls
-                  showInteractive={false}
-                  className="!bg-card !border-border !rounded-lg !shadow-lg"
-                />
-                <MiniMap
-                  nodeColor={(node) => {
-                    const type = (node.data as { entityType?: string })
-                      ?.entityType as EntityType;
-                    const cfg = ENTITY_CONFIG[type];
-                    return cfg?.color || "oklch(0.5 0 0)";
-                  }}
-                  maskColor="oklch(0.1 0 0 / 0.7)"
-                  className="!bg-card !border-border !rounded-lg"
-                />
-              </ReactFlow>
-            )}
-          </div>
-        </CardContent>
-      </Card>
+            </div>
+          ) : (
+            <ReactFlow
+              nodes={nodes}
+              edges={edges}
+              onNodesChange={onNodesChange}
+              onEdgesChange={onEdgesChange}
+              onNodeClick={handleNodeClick}
+              onEdgeClick={handleEdgeClick}
+              nodeTypes={nodeTypes}
+              connectionMode={ConnectionMode.Loose}
+              fitView
+              fitViewOptions={{ padding: 0.2 }}
+              minZoom={0.3}
+              maxZoom={2}
+              proOptions={{ hideAttribution: true }}
+              style={{ background: "oklch(0.11 0 0)" }}
+            >
+              <Background color="oklch(1 0 0 / 0.06)" gap={32} size={1} />
+              <Controls
+                showInteractive={false}
+                className="!bg-card !border-foreground/10 !rounded-2xl !shadow-xl"
+              />
+              <MiniMap
+                nodeColor={(node) => {
+                  const type = (node.data as { entityType?: string })
+                    ?.entityType as EntityType;
+                  const cfg = ENTITY_CONFIG[type];
+                  return cfg?.color || "oklch(0.5 0 0)";
+                }}
+                maskColor="oklch(0.1 0 0 / 0.8)"
+                className="!bg-card !border-foreground/10 !rounded-2xl"
+              />
+            </ReactFlow>
+          )}
+        </div>
+      </div>
 
-      {/* Operational Memory Provenance Sheet (Side Drawer) */}
+      {/* Operational Memory Provenance Sheet */}
       <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
-        <SheetContent className="w-full sm:max-w-md p-6 overflow-y-auto flex flex-col gap-6">
+        <SheetContent className="w-full sm:max-w-md p-6 overflow-y-auto flex flex-col gap-6 bg-background border-l border-foreground/10">
           <SheetHeader className="p-0 gap-1.5">
             <div className="flex items-center gap-2">
-              <Badge variant="secondary" className="gap-1 bg-emerald-500/10 text-emerald-400 border-0 text-xs">
+              <span className="px-3 py-1 rounded-full text-xs font-mono border border-emerald-500/30 bg-emerald-500/10 text-emerald-400 inline-flex items-center gap-1.5">
                 <Sparkles className="size-3" />
-                Operational Memory Provenance
-              </Badge>
+                Graph Provenance Model
+              </span>
             </div>
-            <SheetTitle className="text-xl font-bold tracking-tight">
+            <SheetTitle className="text-xl font-display font-bold tracking-tight text-foreground">
               {selectedNodeData ? selectedNodeData.label : selectedEdgeData?.label || "Memory Provenance"}
             </SheetTitle>
-            <SheetDescription className="text-xs text-muted-foreground">
+            <SheetDescription className="text-xs font-mono text-muted-foreground">
               {selectedNodeData
                 ? `Entity type: ${selectedNodeData.entityType}`
                 : "Relationship evidence trace"}
             </SheetDescription>
           </SheetHeader>
 
-          {/* Node / Edge Summary Card */}
+          {/* Node Summary Card */}
           {selectedNodeData && (
-            <div className="flex flex-col gap-3 p-4 rounded-xl bg-card border border-border">
-              <div className="flex items-center justify-between">
-                <span className="text-xs text-muted-foreground font-medium">Confidence Score</span>
-                <Badge
-                  variant="outline"
-                  className="font-mono text-xs gap-1 bg-emerald-500/10 text-emerald-400 border-emerald-500/30"
-                >
-                  <ShieldCheck className="size-3.5" />
+            <div className="p-4 rounded-2xl bg-card/60 border border-foreground/10 space-y-3">
+              <div className="flex items-center justify-between text-xs font-mono">
+                <span className="text-muted-foreground">Confidence Score</span>
+                <span className="px-2.5 py-0.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 text-emerald-400 font-semibold">
                   {Math.round((selectedNodeData.confidence || 0.9) * 100)}%
-                </Badge>
+                </span>
               </div>
 
               {selectedNodeData.evidence && (
-                <div className="flex flex-col gap-1 text-xs">
-                  <span className="font-semibold text-muted-foreground">Primary Fact Quote</span>
-                  <p className="p-2.5 rounded-lg bg-background border border-border/60 text-foreground/90 italic font-sans">
+                <div className="space-y-1 text-xs">
+                  <span className="font-mono text-muted-foreground uppercase text-[10px]">Fact Quote</span>
+                  <p className="p-3 rounded-xl bg-background/80 border border-foreground/10 text-foreground italic font-sans leading-relaxed">
                     &ldquo;{selectedNodeData.evidence}&rdquo;
                   </p>
                 </div>
               )}
 
               <Button
-                size="sm"
                 onClick={() => {
                   setSheetOpen(false);
                   router.push(`/entities/${selectedNodeData.entityType}/${selectedNodeData.entityId}`);
                 }}
-                className="w-full gap-2 mt-1"
+                className="w-full rounded-full bg-foreground text-background hover:bg-foreground/90 font-mono text-xs h-10 gap-2 mt-2"
               >
-                View Entity Page
-                <ExternalLink className="size-3.5" data-icon="inline-end" />
+                View Full Entity Record
+                <ExternalLink className="size-3.5" />
               </Button>
             </div>
           )}
 
           {/* Evidence Records List */}
-          <div className="flex flex-col gap-3">
-            <h3 className="text-sm font-bold flex items-center gap-2">
-              <FileText className="size-4 text-primary" />
-              Source Documents & Evidence Trace ({evidenceList.length})
+          <div className="space-y-3">
+            <h3 className="text-xs font-mono uppercase tracking-wider text-muted-foreground flex items-center gap-2">
+              <FileText className="size-3.5 text-cyan-400" />
+              Source Documents ({evidenceList.length})
             </h3>
 
             {loadingEvidence ? (
-              <div className="flex flex-col gap-3">
-                <div className="h-16 rounded-xl bg-card animate-pulse" />
-                <div className="h-16 rounded-xl bg-card animate-pulse" />
+              <div className="space-y-3">
+                <div className="h-16 rounded-2xl bg-card/50 animate-pulse" />
+                <div className="h-16 rounded-2xl bg-card/50 animate-pulse" />
               </div>
             ) : evidenceList.length === 0 ? (
-              <p className="text-xs text-muted-foreground p-4 text-center border border-dashed rounded-xl">
+              <p className="text-xs font-mono text-muted-foreground p-6 text-center border border-dashed border-foreground/15 rounded-2xl">
                 No direct evidence records linked to this node.
               </p>
             ) : (
-              <div className="flex flex-col gap-3">
+              <div className="space-y-3">
                 {evidenceList.map((ev) => (
-                  <div key={ev.id} className="flex flex-col gap-2 p-3.5 rounded-xl bg-card border border-border text-xs">
-                    <div className="flex items-center justify-between">
-                      <span className="font-semibold truncate max-w-[200px]" title={ev.source_name}>
+                  <div key={ev.id} className="p-4 rounded-2xl bg-card/60 border border-foreground/10 space-y-2 text-xs">
+                    <div className="flex items-center justify-between font-mono">
+                      <span className="font-semibold text-foreground truncate max-w-[200px]" title={ev.source_name}>
                         {ev.source_name}
                       </span>
-                      <Badge variant="outline" className="text-[10px] font-mono">
-                        {Math.round(ev.confidence * 100)}%
-                      </Badge>
+                      <span className="text-[10px] text-emerald-400">
+                        {Math.round(ev.confidence * 100)}% Match
+                      </span>
                     </div>
 
-                    <div className="flex gap-2 p-2.5 rounded-lg bg-background text-foreground/90 italic">
-                      <Quote className="size-3.5 text-emerald-400 shrink-0 mt-0.5" />
-                      <p className="line-clamp-4 leading-relaxed">&ldquo;{ev.evidence_text}&rdquo;</p>
+                    <div className="p-3 rounded-xl bg-background/80 border border-foreground/10 text-foreground italic flex gap-2">
+                      <Quote className="size-3 text-cyan-400 shrink-0 mt-0.5" />
+                      <p className="line-clamp-4 leading-relaxed font-sans">&ldquo;{ev.evidence_text}&rdquo;</p>
                     </div>
 
-                    <div className="flex items-center justify-between text-[10px] text-muted-foreground pt-1">
-                      <span className="capitalize">Type: {ev.source_type}</span>
+                    <div className="flex items-center justify-between text-[10px] font-mono text-muted-foreground pt-1">
+                      <span className="capitalize">Source: {ev.source_type}</span>
                       <span>{new Date(ev.created_at).toLocaleDateString()}</span>
                     </div>
                   </div>
@@ -552,3 +533,4 @@ export default function KnowledgeGraphPage() {
     </div>
   );
 }
+

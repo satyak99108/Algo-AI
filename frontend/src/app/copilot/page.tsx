@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback, useRef } from "react";
+import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
 import {
   Brain,
@@ -8,15 +8,11 @@ import {
   Sparkles,
   ShieldCheck,
   FileText,
-  HelpCircle,
-  RefreshCw,
   User,
   ArrowRight,
   Lightbulb,
   ExternalLink,
 } from "lucide-react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -33,7 +29,7 @@ import { Bubble, BubbleContent } from "@/components/ui/bubble";
 import { Attachment, AttachmentGroup, AttachmentMedia, AttachmentContent, AttachmentTitle, AttachmentDescription } from "@/components/ui/attachment";
 import { Marker, MarkerContent } from "@/components/ui/marker";
 import { api } from "@/lib/api";
-import { ENTITY_CONFIG, ALL_ENTITY_TYPES } from "@/lib/constants";
+import { ENTITY_CONFIG } from "@/lib/constants";
 import type { CopilotAnswerResponse, CopilotSuggestion, EntityType } from "@/types/entities";
 
 interface ChatMessage {
@@ -52,7 +48,6 @@ export default function CompanyCopilotPage() {
   const [loadingSuggestions, setLoadingSuggestions] = useState(true);
   const [isAsking, setIsAsking] = useState(false);
 
-  // Fetch initial suggestions
   useEffect(() => {
     api
       .getCopilotSuggestions()
@@ -61,7 +56,6 @@ export default function CompanyCopilotPage() {
       .finally(() => setLoadingSuggestions(false));
   }, []);
 
-  // Submit question handler
   const handleAsk = useCallback(
     async (questionText?: string) => {
       const q = (questionText || inputQuestion).trim();
@@ -81,7 +75,7 @@ export default function CompanyCopilotPage() {
       const loadingAiMessage: ChatMessage = {
         id: aiMsgId,
         role: "assistant",
-        content: "Searching operational memory and analyzing evidence...",
+        content: "Searching operational memory and analyzing evidence provenance...",
         timestamp: now,
         loading: true,
       };
@@ -125,66 +119,71 @@ export default function CompanyCopilotPage() {
   );
 
   return (
-    <div className="flex flex-col gap-4 h-[calc(100vh-100px)] animate-fade-in pb-4">
-      {/* Top Banner */}
-      <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 bg-card border border-border p-5 rounded-2xl shadow-sm shrink-0">
-        <div className="flex items-start gap-4">
-          <div className="flex items-center justify-center size-11 rounded-xl bg-primary/10 text-primary shrink-0">
-            <Brain className="size-6 text-primary" />
+    <div className="flex flex-col gap-6 h-[calc(100vh-130px)] max-w-[1300px] mx-auto py-2">
+      {/* Optimus Studio Header */}
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-4 border-b border-foreground/10 shrink-0">
+        <div>
+          <div className="inline-flex items-center gap-3 text-xs font-mono text-muted-foreground uppercase tracking-widest mb-2">
+            <span className="w-8 h-px bg-foreground/30" />
+            AI Knowledge Copilot
           </div>
-          <div className="flex flex-col gap-0.5">
-            <div className="flex items-center gap-2">
-              <h1 className="text-xl font-bold tracking-tight">Company Knowledge Copilot</h1>
-              <Badge variant="secondary" className="gap-1 bg-emerald-500/10 text-emerald-400 border-emerald-500/20 text-xs">
-                <Sparkles className="size-3" />
-                Phase 4
-              </Badge>
-            </div>
-            <p className="text-xs text-muted-foreground max-w-xl">
-              Ask natural language questions about your company. Answers are generated using operational memory context backed by explicit evidence quotes and confidence scores.
-            </p>
-          </div>
+          <h1 className="text-2xl lg:text-4xl font-display tracking-tight flex items-center gap-2">
+            Company Knowledge Copilot
+            <span className="text-xs font-mono px-3 py-1 rounded-full border border-emerald-500/30 bg-emerald-500/10 text-emerald-400">
+              ● Live Index
+            </span>
+          </h1>
         </div>
+        <p className="text-xs font-mono text-muted-foreground max-w-md">
+          Ask natural language questions backed by real evidence quotes and confidence metrics.
+        </p>
       </div>
 
       {/* Suggested Questions Pill Row */}
       {messages.length === 0 && (
-        <div className="flex flex-col gap-2 shrink-0">
-          <div className="flex items-center gap-2 text-xs font-semibold text-muted-foreground px-1">
+        <div className="space-y-3 shrink-0">
+          <div className="flex items-center gap-2 text-xs font-mono text-muted-foreground">
             <Lightbulb className="size-3.5 text-amber-400" />
-            <span>Suggested Questions (Ask your company anything)</span>
+            <span>Suggested Prompts (Click to Query):</span>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
-            {suggestions.map((s, idx) => (
-              <Card
-                key={idx}
-                onClick={() => handleAsk(s.question)}
-                className="cursor-pointer transition-all duration-200 hover:border-primary/50 hover:bg-card/80 p-3.5 flex flex-col gap-1.5 border-border shadow-xs"
-              >
-                <div className="flex items-center justify-between">
-                  <Badge variant="outline" className="text-[10px] uppercase tracking-wider font-semibold">
-                    {s.category}
-                  </Badge>
-                  <ArrowRight className="size-3 text-muted-foreground" />
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+            {suggestions.map((s, idx) => {
+              const numStr = String(idx + 1).padStart(2, "0");
+              return (
+                <div
+                  key={idx}
+                  onClick={() => handleAsk(s.question)}
+                  className="cursor-pointer p-4 rounded-2xl border border-foreground/10 bg-card/60 hover:bg-foreground/[0.04] transition-all duration-300 hover:-translate-y-0.5 space-y-2 group"
+                >
+                  <div className="flex items-center justify-between">
+                    <span className="font-mono text-[11px] text-muted-foreground">{numStr}</span>
+                    <span className="text-[10px] font-mono px-2 py-0.5 rounded-full border border-foreground/15 text-muted-foreground uppercase">
+                      {s.category}
+                    </span>
+                  </div>
+                  <h3 className="text-xs font-display font-semibold text-foreground group-hover:translate-x-1 transition-transform">
+                    {s.question}
+                  </h3>
+                  <p className="text-[11px] text-muted-foreground line-clamp-1">{s.description}</p>
                 </div>
-                <span className="text-xs font-bold text-foreground leading-snug">{s.question}</span>
-                <span className="text-[11px] text-muted-foreground line-clamp-1">{s.description}</span>
-              </Card>
-            ))}
+              );
+            })}
           </div>
         </div>
       )}
 
-      {/* Chat Thread Canvas using shadcn MessageScroller */}
-      <Card className="flex-1 overflow-hidden border-border flex flex-col min-h-0 shadow-sm bg-card/30">
-        <CardContent className="p-4 flex-1 flex flex-col min-h-0">
+      {/* Chat Thread Canvas */}
+      <div className="flex-1 overflow-hidden rounded-3xl border border-foreground/10 bg-card/40 flex flex-col min-h-0">
+        <div className="flex-1 p-4 overflow-hidden flex flex-col min-h-0">
           <MessageScrollerProvider autoScroll>
             <MessageScroller className="flex-1">
               <MessageScrollerViewport>
                 <MessageScrollerContent className="gap-6 p-2">
                   <Marker variant="separator">
-                    <MarkerContent>Operational Memory Copilot</MarkerContent>
+                    <MarkerContent className="font-mono text-xs text-muted-foreground bg-background px-4 py-1 rounded-full border border-foreground/10">
+                      Operational Memory AI Studio
+                    </MarkerContent>
                   </Marker>
 
                   {messages.map((message) => (
@@ -195,58 +194,56 @@ export default function CompanyCopilotPage() {
                     >
                       <Message align={message.role === "user" ? "end" : "start"}>
                         <MessageAvatar>
-                          <Avatar className="size-8">
-                            <AvatarFallback className={message.role === "user" ? "bg-primary text-primary-foreground text-xs" : "bg-emerald-500/20 text-emerald-400 text-xs"}>
-                              {message.role === "user" ? <User className="size-4" /> : <Brain className="size-4" />}
+                          <Avatar className="size-8 border border-foreground/15">
+                            <AvatarFallback className={message.role === "user" ? "bg-foreground text-background text-xs font-mono font-bold" : "bg-emerald-500/20 text-emerald-400 text-xs"}>
+                              {message.role === "user" ? "YOU" : <Brain className="size-4" />}
                             </AvatarFallback>
                           </Avatar>
                         </MessageAvatar>
 
                         <MessageContent>
-                          <MessageHeader className="text-xs font-medium text-muted-foreground">
-                            {message.role === "user" ? "You" : "Knowledge Copilot"}
+                          <MessageHeader className="text-xs font-mono text-muted-foreground">
+                            {message.role === "user" ? "User Query" : "Knowledge Copilot"}
                           </MessageHeader>
 
                           {/* Message Surface */}
                           <Bubble
                             variant={message.role === "user" ? "default" : "secondary"}
                             align={message.role === "user" ? "end" : "start"}
+                            className="rounded-2xl"
                           >
-                            <BubbleContent className={`text-sm leading-relaxed ${message.loading ? "animate-pulse font-mono" : ""}`}>
+                            <BubbleContent className={`text-sm leading-relaxed font-sans ${message.loading ? "animate-pulse font-mono text-xs text-emerald-400" : ""}`}>
                               {message.content}
                             </BubbleContent>
                           </Bubble>
 
                           {/* Copilot Response Evidence Breakdown */}
                           {message.response && (
-                            <div className="flex flex-col gap-3 mt-1.5 max-w-[90%]">
+                            <div className="flex flex-col gap-3 mt-2 max-w-[90%]">
                               {/* Confidence Badge */}
                               <div className="flex items-center gap-2">
-                                <Badge
-                                  variant="outline"
-                                  className="gap-1 text-xs font-mono bg-emerald-500/10 text-emerald-400 border-emerald-500/30"
-                                >
+                                <span className="px-3 py-1 rounded-full text-xs font-mono border border-emerald-500/30 bg-emerald-500/10 text-emerald-400 inline-flex items-center gap-1.5">
                                   <ShieldCheck className="size-3.5" />
-                                  {Math.round(message.response.confidence * 100)}% Confidence
-                                </Badge>
+                                  {Math.round(message.response.confidence * 100)}% Confidence Match
+                                </span>
                               </div>
 
                               {/* Evidence Attachments */}
                               {message.response.evidence && message.response.evidence.length > 0 && (
-                                <div className="flex flex-col gap-1.5">
-                                  <span className="text-[11px] font-semibold text-muted-foreground flex items-center gap-1">
-                                    <FileText className="size-3 text-primary" />
+                                <div className="flex flex-col gap-2">
+                                  <span className="text-[11px] font-mono text-muted-foreground uppercase tracking-wider flex items-center gap-1">
+                                    <FileText className="size-3 text-cyan-400" />
                                     Evidence Provenance ({message.response.evidence.length})
                                   </span>
 
                                   <AttachmentGroup className="flex-col gap-2">
                                     {message.response.evidence.map((ev, idx) => (
-                                      <Attachment key={idx} state="done" size="sm" className="w-full bg-background/80">
+                                      <Attachment key={idx} state="done" size="sm" className="w-full bg-background/70 border border-foreground/10 rounded-xl">
                                         <AttachmentMedia variant="icon">
                                           <FileText className="size-4 text-emerald-400" />
                                         </AttachmentMedia>
                                         <AttachmentContent>
-                                          <AttachmentTitle className="text-xs font-bold">
+                                          <AttachmentTitle className="text-xs font-mono font-semibold text-foreground">
                                             {ev.source_name}
                                           </AttachmentTitle>
                                           <AttachmentDescription className="text-xs italic text-foreground/80 line-clamp-2">
@@ -262,18 +259,17 @@ export default function CompanyCopilotPage() {
                               {/* Mentioned Entities */}
                               {message.response.mentioned_entities && message.response.mentioned_entities.length > 0 && (
                                 <div className="flex flex-wrap items-center gap-1.5 pt-1">
-                                  <span className="text-[11px] text-muted-foreground">Related Entities:</span>
+                                  <span className="text-[11px] font-mono text-muted-foreground">Related Nodes:</span>
                                   {message.response.mentioned_entities.map((ent, idx) => {
-                                    const cfg = ENTITY_CONFIG[ent.type as EntityType];
                                     return (
-                                      <Badge key={idx} variant="outline" className="text-[11px] gap-1 px-2 py-0.5">
+                                      <span key={idx} className="text-xs font-mono px-2.5 py-0.5 rounded-full border border-foreground/15 bg-foreground/5 text-foreground flex items-center gap-1">
                                         <span>{ent.name}</span>
                                         {ent.id && (
-                                          <Link href={`/entities/${ent.type}/${ent.id}`} className="hover:text-primary">
+                                          <Link href={`/entities/${ent.type}/${ent.id}`} className="hover:text-cyan-400">
                                             <ExternalLink className="size-2.5" />
                                           </Link>
                                         )}
-                                      </Badge>
+                                      </span>
                                     );
                                   })}
                                 </div>
@@ -281,7 +277,7 @@ export default function CompanyCopilotPage() {
                             </div>
                           )}
 
-                          <MessageFooter className="text-[10px] text-muted-foreground">
+                          <MessageFooter className="text-[10px] font-mono text-muted-foreground">
                             {message.timestamp}
                           </MessageFooter>
                         </MessageContent>
@@ -293,12 +289,12 @@ export default function CompanyCopilotPage() {
               <MessageScrollerButton />
             </MessageScroller>
           </MessageScrollerProvider>
-        </CardContent>
+        </div>
 
-        {/* Input Bar */}
-        <div className="p-3 bg-card border-t border-border flex items-center gap-2">
+        {/* Optimus Input Bar */}
+        <div className="p-4 bg-background/80 border-t border-foreground/10 flex items-center gap-3">
           <Input
-            placeholder="Ask a question about onboarding, decisions, projects, or workflows..."
+            placeholder="Ask anything about onboarding, team decisions, specs, or task ownership..."
             value={inputQuestion}
             onChange={(e) => setInputQuestion(e.target.value)}
             onKeyDown={(e) => {
@@ -307,19 +303,19 @@ export default function CompanyCopilotPage() {
                 handleAsk();
               }
             }}
-            className="bg-background flex-1"
+            className="bg-card/60 border-foreground/15 rounded-full px-5 h-12 text-sm focus:border-foreground flex-1"
           />
           <Button
             onClick={() => handleAsk()}
             disabled={!inputQuestion.trim() || isAsking}
-            size="sm"
-            className="gap-2 shrink-0"
+            className="rounded-full bg-foreground text-background hover:bg-foreground/90 px-6 h-12 text-xs font-medium gap-2 shrink-0 transition-all"
           >
-            <Send className="size-4" data-icon="inline-start" />
+            <Send className="size-3.5" />
             Ask Copilot
           </Button>
         </div>
-      </Card>
+      </div>
     </div>
   );
 }
+

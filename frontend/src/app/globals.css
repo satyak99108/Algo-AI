@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400..700;1,400..700&family=JetBrains+Mono:ital,wght@0,300..700;1,300..700&display=swap');
 @import "tailwindcss";
 
 @custom-variant dark (&:is(.dark *));
@@ -39,61 +40,77 @@
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
-  --font-sans: var(--font-sans);
-  --font-mono: var(--font-geist-mono);
-  --font-heading: var(--font-sans);
+  --font-sans: 'Instrument Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-display: 'Instrument Sans', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+  --font-heading: 'Instrument Sans', sans-serif;
   --radius-2xl: calc(var(--radius) * 1.8);
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
 }
 
-/* Dark theme (default) */
+/* Dark theme (default - Optimus aesthetic) */
 :root {
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --destructive-foreground: oklch(0.93 0 0);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
+  --background: oklch(0.12 0 0); /* Ultra dark zinc-950 */
+  --foreground: oklch(0.985 0 0); /* Pure white */
+  --card: oklch(0.16 0 0);
+  --card-foreground: oklch(0.985 0 0);
+  --popover: oklch(0.16 0 0);
+  --popover-foreground: oklch(0.985 0 0);
+  --primary: oklch(0.985 0 0);
+  --primary-foreground: oklch(0.12 0 0);
+  --secondary: oklch(0.22 0 0);
+  --secondary-foreground: oklch(0.985 0 0);
+  --muted: oklch(0.22 0 0);
+  --muted-foreground: oklch(0.65 0 0);
+  --accent: oklch(0.25 0 0);
+  --accent-foreground: oklch(0.985 0 0);
+  --destructive: oklch(0.6 0.2 25);
+  --destructive-foreground: oklch(0.985 0 0);
+  --border: oklch(1 0 0 / 12%);
+  --input: oklch(1 0 0 / 15%);
+  --ring: oklch(0.7 0 0);
+  --radius: 0.75rem;
+  --sidebar: oklch(0.14 0 0);
+  --sidebar-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.985 0 0);
+  --sidebar-primary-foreground: oklch(0.12 0 0);
+  --sidebar-accent: oklch(0.22 0 0);
+  --sidebar-accent-foreground: oklch(0.985 0 0);
+  --sidebar-border: oklch(1 0 0 / 10%);
+  --sidebar-ring: oklch(0.7 0 0);
 }
 
 /* Entity type colors for knowledge graph */
 :root {
-  --entity-people: oklch(0.65 0.15 270);
-  --entity-projects: oklch(0.65 0.17 160);
-  --entity-decisions: oklch(0.72 0.15 60);
-  --entity-tasks: oklch(0.65 0.15 220);
-  --entity-processes: oklch(0.62 0.18 290);
-  --entity-events: oklch(0.65 0.18 15);
-  --entity-documents: oklch(0.55 0.04 250);
-  --entity-workflows: oklch(0.65 0.14 180);
+  --entity-people: oklch(0.7 0.16 260);
+  --entity-projects: oklch(0.7 0.18 160);
+  --entity-decisions: oklch(0.78 0.16 65);
+  --entity-tasks: oklch(0.7 0.16 220);
+  --entity-processes: oklch(0.68 0.19 295);
+  --entity-events: oklch(0.7 0.19 20);
+  --entity-documents: oklch(0.65 0.08 250);
+  --entity-workflows: oklch(0.7 0.16 185);
+}
+
+.dark {
+  --background: oklch(0.12 0 0);
+  --foreground: oklch(0.985 0 0);
+  --card: oklch(0.16 0 0);
+  --card-foreground: oklch(0.985 0 0);
+  --popover: oklch(0.16 0 0);
+  --popover-foreground: oklch(0.985 0 0);
+  --primary: oklch(0.985 0 0);
+  --primary-foreground: oklch(0.12 0 0);
+  --secondary: oklch(0.22 0 0);
+  --secondary-foreground: oklch(0.985 0 0);
+  --muted: oklch(0.22 0 0);
+  --muted-foreground: oklch(0.65 0 0);
+  --accent: oklch(0.25 0 0);
+  --accent-foreground: oklch(0.985 0 0);
+  --border: oklch(1 0 0 / 12%);
+  --input: oklch(1 0 0 / 15%);
+  --ring: oklch(0.7 0 0);
 }
 
 @layer base {
@@ -101,118 +118,131 @@
     @apply border-border outline-ring/50;
   }
   body {
-    @apply antialiased bg-background text-foreground;
-    font-feature-settings: "rlig" 1, "calt" 1;
+    @apply antialiased bg-background text-foreground font-sans selection:bg-foreground selection:text-background;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
   }
   html {
-    @apply font-sans;
+    @apply font-sans scroll-smooth;
   }
 }
 
-/* Custom scrollbar for dark theme */
+/* Custom scrollbar */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
 }
 ::-webkit-scrollbar-track {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
   background: oklch(0.35 0 0);
-  border-radius: 3px;
+  border-radius: 9999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: oklch(0.45 0 0);
+  background: oklch(0.5 0 0);
 }
 
-/* Glassmorphism utility */
-.glass {
-  background: oklch(0.17 0 0 / 0.6);
-  backdrop-filter: blur(12px);
-  border: 1px solid oklch(0.3 0 0 / 0.3);
+/* Optimus Grid Pattern */
+.bg-grid-pattern {
+  background-image: 
+    linear-gradient(to right, oklch(1 0 0 / 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, oklch(1 0 0 / 0.05) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+/* Optimus Marquee Ticker */
+@keyframes marquee {
+  0% { transform: translateX(0%); }
+  100% { transform: translateX(-50%); }
+}
+
+.animate-marquee {
+  display: flex;
+  width: max-content;
+  animation: marquee 30s linear infinite;
+}
+.animate-marquee:hover {
+  animation-play-state: paused;
+}
+
+/* Character Entrance & Line Animations */
+@keyframes charIn {
+  0% { opacity: 0; transform: translateY(12px) rotateX(-20deg); }
+  100% { opacity: 1; transform: translateY(0) rotateX(0deg); }
+}
+
+.animate-char-in {
+  display: inline-block;
+  animation: charIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Optimus Glass Pill Navigation Header */
+.glass-header {
+  background: oklch(0.14 0 0 / 0.75);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid oklch(1 0 0 / 0.12);
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+}
+
+/* Terminal & Code Block Reveal */
+.code-line-reveal {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
 }
 
 /* Graph node glow effect */
 .node-glow {
-  filter: drop-shadow(0 0 8px oklch(0.7 0.15 250 / 0.4));
+  filter: drop-shadow(0 0 12px oklch(0.7 0.15 250 / 0.5));
 }
 
-/* Smooth animations */
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(8px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-@keyframes slideInLeft {
-  from { opacity: 0; transform: translateX(-12px); }
-  to { opacity: 1; transform: translateX(0); }
-}
-@keyframes scaleIn {
-  from { opacity: 0; transform: scale(0.95); }
-  to { opacity: 1; transform: scale(1); }
-}
-@keyframes pulse-subtle {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.85; }
+/* ReactFlow Controls Styling (Optimus Dark Theme Sync) */
+.react-flow__controls {
+  border-radius: 1rem !important;
+  border: 1px solid oklch(1 0 0 / 0.15) !important;
+  background: oklch(0.16 0 0 / 0.9) !important;
+  backdrop-filter: blur(12px) !important;
+  overflow: hidden !important;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.6) !important;
 }
 
-.animate-fade-in {
-  animation: fadeIn 0.4s ease-out forwards;
-}
-.animate-slide-in-left {
-  animation: slideInLeft 0.3s ease-out forwards;
-}
-.animate-scale-in {
-  animation: scaleIn 0.3s ease-out forwards;
-}
-.animate-pulse-subtle {
-  animation: pulse-subtle 2s ease-in-out infinite;
-}
-
-.dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+.react-flow__controls-button {
+  background: oklch(0.16 0 0) !important;
+  border-bottom: 1px solid oklch(1 0 0 / 0.1) !important;
+  color: oklch(0.95 0 0) !important;
+  fill: oklch(0.95 0 0) !important;
+  transition: all 0.2s ease !important;
+  width: 32px !important;
+  height: 32px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
 }
 
-/* React Flow Dark Mode Overrides */
-.dark .react-flow__controls-button {
-  background-color: var(--card) !important;
-  border-bottom: 1px solid var(--border) !important;
-  color: var(--foreground) !important;
+.react-flow__controls-button:last-child {
+  border-bottom: none !important;
 }
 
-.dark .react-flow__controls-button svg {
-  fill: var(--foreground) !important;
+.react-flow__controls-button:hover {
+  background: oklch(0.28 0 0) !important;
 }
 
-.dark .react-flow__controls-button:hover {
-  background-color: var(--accent) !important;
+.react-flow__controls-button svg {
+  fill: oklch(0.95 0 0) !important;
+  stroke: oklch(0.95 0 0) !important;
+  max-width: 14px !important;
+  max-height: 14px !important;
+}
+
+.react-flow__controls-button:hover svg {
+  fill: oklch(1 0 0) !important;
+  stroke: oklch(1 0 0) !important;
+}
+
+.react-flow__controls-zoomin,
+.react-flow__controls-zoomout,
+.react-flow__controls-fitview,
+.react-flow__controls-interactive {
+  background-color: oklch(0.16 0 0) !important;
 }
